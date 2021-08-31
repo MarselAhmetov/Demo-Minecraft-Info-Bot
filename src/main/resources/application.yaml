@@ -1,5 +1,0 @@
-server:
-  port: ${PORT:8050}
-bot:
-  name: ${BOT_NAME}
-  token: ${BOT_TOKEN}
