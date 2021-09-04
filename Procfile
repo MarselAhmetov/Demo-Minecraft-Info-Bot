@@ -1,2 +1,2 @@
-web: java $JAVA_OPTS -Dserver.port=$PORT -jar target/demo_bot_minecraft-0.0.1-SNAPSHOT.jar
-JAVA_TOOL_OPTIONS: -Xmx300m -Xss512k -XX:CICompilerCount=2 -Dfile.encoding=UTF-8
+worker: java -Xmx300m -Xss512k -XX:CICompilerCount=2 -Dfile.encoding=UTF-8 -cp ./target/classes:./target/dependency/*
+ru.demo_bot_minecraft.MentalCalculationApplication
