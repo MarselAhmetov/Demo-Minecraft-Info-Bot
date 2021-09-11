@@ -32,16 +32,13 @@ public class MinecraftConnector {
 
             outputStream.writeByte(0x00);               // handshake packet
             BinaryUtils.sendIntData(outputStream, 0x00);         // protocol version
-            BinaryUtils.sendIntData(outputStream,
-                address.length());    // packed remote address length as varint
+            BinaryUtils.sendIntData(outputStream, address.length());    // packed remote address length as varint
             outputStream.writeBytes(address);              // remote address as string
             outputStream.writeShort(port);                 // remote port as short
             BinaryUtils.sendIntData(outputStream, 0x01);         // state packet
 
-            BinaryUtils.sendIntData(socketOutputStream,
-                byteArrayOutputStream.size()); // payload size as varint
-            socketOutputStream.write(
-                byteArrayOutputStream.toByteArray());            // send payload
+            BinaryUtils.sendIntData(socketOutputStream, byteArrayOutputStream.size()); // payload size as varint
+            socketOutputStream.write(byteArrayOutputStream.toByteArray());            // send payload
             socketOutputStream.writeByte(0x01);                   // size
             socketOutputStream.writeByte(0x00);                   // ping packet
 
