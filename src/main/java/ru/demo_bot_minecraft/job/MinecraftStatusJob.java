@@ -1,6 +1,7 @@
 package ru.demo_bot_minecraft.job;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -34,9 +35,9 @@ public class MinecraftStatusJob {
 
     @Scheduled(fixedDelay = 10000)
     public void updateMinecraftInfo() {
-        currentCheckTime = LocalDateTime.now();
+        currentCheckTime = LocalDateTime.now(ZoneId.of("Europe/Moscow"));
         ServerStats currentServerData = minecraftService.getMinecraftServerStats(address, port);
-        log.info(currentServerData.toString());
+        log.info(currentCheckTime.toString() + " " + currentServerData.toString());
         var newEvents = checkEvent(currentServerData, this.lastCheckData);
         if (newEvents != null && !newEvents.isEmpty()) {
             newEvents.forEach(event -> {
