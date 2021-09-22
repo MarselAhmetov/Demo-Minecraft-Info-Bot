@@ -1,5 +1,6 @@
 package ru.demo_bot_minecraft.job;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -48,11 +49,14 @@ public class MinecraftStatusJob {
                     if (!playerEvents.isEmpty()) {
                         var lastEvent = playerEvents.peek();
                         if (lastEvent.getAction().equals(ServerAction.JOIN)) {
-                            var intervals = serverInfoStore.getPlayingInfo().computeIfAbsent(event.getPlayer().getName(), k -> new ArrayList<>());
+                            var intervals = serverInfoStore.getPlayingInfo()
+                                    .computeIfAbsent(event.getPlayer().getName(),
+                                            k -> new ArrayList<>());
                             intervals.add(TimeInterval.builder()
-                                .start(lastEvent.getTime())
-                                .finish(event.getTime())
-                                .build());
+                                    .start(lastEvent.getTime())
+                                    .duration(Duration.between(lastEvent.getTime(), event.getTime()))
+                                    .finish(event.getTime())
+                                    .build());
                         }
                     }
                 }
