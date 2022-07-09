@@ -49,7 +49,7 @@ public class MinecraftConnector {
             inputStream.read(rawData);                // fill byte array with JSON data
 
             String json = new String(rawData, StandardCharsets.UTF_8);
-            json = json.substring(0, json.lastIndexOf(",\"favicon\"")) + "}";
+            json = json.substring(0, json.lastIndexOf(",\"favicon\"") >= 0 ? json.lastIndexOf(",\"favicon\"") : json.length()) + "}";
 
             ServerStats serverStats = mapper.readValue(json, ServerStats.class);
 

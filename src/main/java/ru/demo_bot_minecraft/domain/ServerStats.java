@@ -1,5 +1,6 @@
 package ru.demo_bot_minecraft.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -17,6 +18,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @EqualsAndHashCode
 @ToString
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ServerStats {
     Description description;
     @JsonProperty("players")
