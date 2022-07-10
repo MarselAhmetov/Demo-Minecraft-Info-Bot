@@ -39,9 +39,10 @@ public class ServerInfoAction implements Action {
         SendMessage message;
         StringBuilder messageBuilder = new StringBuilder();
         ServerStats serverStats = minecraftService.getMinecraftServerStats(address, port);
+        if (serverStats.getDescription() != null) {
+            messageBuilder.append("Minecraft server: ").append(serverStats.getDescription().getText()).append("\n");
+        }
         messageBuilder
-                .append("Minecraft server: ").append(address).append(":")
-                .append(port).append("\n")
                 .append("Players online: ").append(serverStats.getPlayersInfo().getOnline()).append("/")
                 .append(serverStats.getPlayersInfo().getMax()).append("\n");
         if (serverStats.getPlayersInfo().getPlayersOnline() != null) {
