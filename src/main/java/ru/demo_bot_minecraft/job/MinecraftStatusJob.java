@@ -1,21 +1,29 @@
 package ru.demo_bot_minecraft.job;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Stack;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import ru.demo_bot_minecraft.ServerInfoStore;
+import org.springframework.transaction.annotation.Transactional;
 import ru.demo_bot_minecraft.domain.ServerAction;
-import ru.demo_bot_minecraft.domain.ServerEvent;
-import ru.demo_bot_minecraft.domain.ServerStats;
-import ru.demo_bot_minecraft.domain.TimeInterval;
+import ru.demo_bot_minecraft.domain.database.Player;
+import ru.demo_bot_minecraft.domain.database.ServerEvent;
+import ru.demo_bot_minecraft.domain.database.ServerStats;
+import ru.demo_bot_minecraft.domain.database.Subscription;
+import ru.demo_bot_minecraft.domain.database.SubscriptionType;
+import ru.demo_bot_minecraft.event.SendMessageEvent;
+import ru.demo_bot_minecraft.mapper.ServerStatsMapper;
+import ru.demo_bot_minecraft.repository.PlayerRepository;
+import ru.demo_bot_minecraft.repository.ServerEventRepository;
+import ru.demo_bot_minecraft.repository.ServerStatsRepository;
+import ru.demo_bot_minecraft.repository.SubscriptionRepository;
 import ru.demo_bot_minecraft.service.MinecraftService;
 
 @Component
@@ -24,53 +32,39 @@ import ru.demo_bot_minecraft.service.MinecraftService;
 public class MinecraftStatusJob {
 
     private final MinecraftService minecraftService;
-    private final ServerInfoStore serverInfoStore;
+    private final PlayerRepository playerRepository;
+    private final ServerEventRepository serverEventRepository;
+    private final ServerStatsRepository serverStatsRepository;
+    private final SubscriptionRepository subscriptionRepository;
+
+    private final ServerStatsMapper serverStatsMapper;
+
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Value("${minecraft.server.address}")
     private String address;
     @Value("${minecraft.server.port}")
     private Integer port;
 
-    private ServerStats lastCheckData;
     private LocalDateTime currentCheckTime;
 
     @Scheduled(fixedDelay = 10000)
+    @Transactional
     public void updateMinecraftInfo() {
+        ServerStats lastCheckData = serverStatsRepository.getServerStats().orElse(null);
         currentCheckTime = LocalDateTime.now(ZoneId.of("Europe/Moscow"));
-        ServerStats currentServerData = minecraftService.getMinecraftServerStats(address, port);
+        var currentServerData = minecraftService.getMinecraftServerStats(address, port);
         log.info(currentCheckTime.toString() + " " + currentServerData.toString());
-        var newEvents = checkEvent(currentServerData, this.lastCheckData);
-        if (newEvents != null && !newEvents.isEmpty()) {
-            newEvents.forEach(event -> {
-                var playerEvents = serverInfoStore.getPlayersEvents().computeIfAbsent(event.getPlayer().getName(), k -> new Stack<>());
-                if (event.getAction().equals(ServerAction.JOIN)) {
-                }
-                if (event.getAction().equals(ServerAction.LEFT)) {
-                    if (!playerEvents.isEmpty()) {
-                        var lastEvent = playerEvents.peek();
-                        if (lastEvent.getAction().equals(ServerAction.JOIN)) {
-                            var intervals = serverInfoStore.getPlayingInfo()
-                                    .computeIfAbsent(event.getPlayer().getName(),
-                                            k -> new ArrayList<>());
-                            intervals.add(TimeInterval.builder()
-                                    .start(lastEvent.getTime())
-                                    .duration(Duration.between(lastEvent.getTime(), event.getTime()))
-                                    .finish(event.getTime())
-                                    .build());
-                        }
-                    }
-                }
-                playerEvents.push(event);
-            });
-        }
-        this.lastCheckData = currentServerData;
+        var newEvents = checkEvent(currentServerData, lastCheckData);
+        serverStatsRepository.updateData(serverStatsMapper.toEntity(currentServerData));
     }
 
-    private List<ServerEvent> checkEvent(ServerStats currentServerData, ServerStats lastCheckData) {
+    private List<ServerEvent> checkEvent(ru.demo_bot_minecraft.domain.ServerStats currentServerData, ServerStats lastCheckData) {
         List<ServerEvent> events = new ArrayList<>();
-        if (lastCheckData != null && !currentServerData.equals(lastCheckData)) {
+
+        if (lastCheckData != null && !isDataEquals(currentServerData, lastCheckData)) {
             var currentOnline = currentServerData.getPlayersInfo().getPlayersOnline();
-            var lastCheckOnline = lastCheckData.getPlayersInfo().getPlayersOnline();
+            var lastCheckOnline = lastCheckData.getPlayersOnline();
             if (currentOnline == null) {
                 currentOnline = new ArrayList<>();
             }
@@ -86,24 +80,63 @@ public class MinecraftStatusJob {
                 left.removeAll(currentOnline);
 
                 if (!joined.isEmpty()) {
-                    joined.forEach(player -> events.add(
-                        ServerEvent.builder()
-                            .player(player)
-                            .action(ServerAction.JOIN)
-                            .time(this.currentCheckTime)
-                        .build()));
+                        joined.forEach(player -> {
+                            boolean isPlayerNew = !playerRepository.existsById(player.getId());
+                            var subscriptions = subscriptionRepository.findAll();
+                            if (isPlayerNew) {
+                                StringBuilder messageBuilder = new StringBuilder();
+                                messageBuilder.append("NEW player with name: ")
+                                        .append(player.getName())
+                                            .append(" joined to server");
+                                subscriptions.stream()
+                                    .map(Subscription::getTelegramUser)
+                                    .distinct()
+                                    .forEach(user -> applicationEventPublisher.publishEvent(new SendMessageEvent(this, messageBuilder.toString(), user.getId().toString())));
+                            } else {
+                                StringBuilder messageBuilder = new StringBuilder();
+                                messageBuilder
+                                    .append(player.getName())
+                                    .append(" joined to server");
+                                subscriptions.stream()
+                                    .filter(subscription -> subscription.getType().equals(SubscriptionType.PLAYERS_JOIN))
+                                    .map(Subscription::getTelegramUser)
+                                    .distinct()
+                                    .forEach(user -> applicationEventPublisher.publishEvent(new SendMessageEvent(this, messageBuilder.toString(), user.getId().toString())));
+                            }
+                            serverEventRepository.save(ServerEvent.builder()
+                                .player(getOrSavePlayer(player))
+                                .action(ServerAction.JOIN)
+                                .time(this.currentCheckTime)
+                                .build());
+                        });
                 }
                 if (!left.isEmpty()) {
-                    left.forEach(player -> events.add(
-                        ServerEvent.builder()
-                            .player(player)
-                            .action(ServerAction.LEFT)
-                            .time(this.currentCheckTime)
-                            .build()));
+                    left.forEach(player -> serverEventRepository.save(ServerEvent.builder()
+                        .player(getOrSavePlayer(player))
+                        .action(ServerAction.LEFT)
+                        .time(this.currentCheckTime)
+                        .build()));
                 }
                 return events;
             }
         }
         return null;
+    }
+
+    private Player getOrSavePlayer(Player player) {
+        if (!playerRepository.existsById(player.getId())) {
+            playerRepository.save(player);
+        }
+        return player;
+    }
+
+    private boolean isDataEquals(ru.demo_bot_minecraft.domain.ServerStats currentServerData, ServerStats lastCheckData) {
+        return lastCheckData.getName().equals(currentServerData.getVersion().getName()) &&
+            lastCheckData.getMaxPlayers() == currentServerData.getPlayersInfo().getMax() &&
+            lastCheckData.getOnlinePlayers() == currentServerData.getPlayersInfo().getOnline() &&
+            lastCheckData.getProtocol().equals(currentServerData.getVersion().getProtocol()) &&
+            lastCheckData.getText().equals(currentServerData.getDescription().getText()) &&
+            lastCheckData.getPlayersOnline().size() == currentServerData.getPlayersInfo().getPlayersOnline().size() &&
+            new HashSet<>(lastCheckData.getPlayersOnline()).containsAll(currentServerData.getPlayersInfo().getPlayersOnline());
     }
 }

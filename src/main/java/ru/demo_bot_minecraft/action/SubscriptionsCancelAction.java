@@ -1,18 +1,19 @@
 package ru.demo_bot_minecraft.action;
 
-import java.time.format.DateTimeFormatter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import ru.demo_bot_minecraft.repository.ServerEventRepository;
+import ru.demo_bot_minecraft.domain.database.SubscriptionType;
+import ru.demo_bot_minecraft.repository.SubscriptionRepository;
 
 @Component
 @RequiredArgsConstructor
-public class ServerLogsAction implements Action {
+public class SubscriptionsCancelAction implements Action {
 
-    private final ServerEventRepository serverEventRepository;
+    private final SubscriptionRepository subscriptionRepository;
     private final Keyboards keyboards;
 
     @Override
@@ -21,7 +22,7 @@ public class ServerLogsAction implements Action {
             var message = update.getMessage();
             if (message.hasText()) {
                 var text = message.getText();
-                if (text.equals("Logs")) {
+                if (text.equals("Cancel New Players") || text.equals("Cancel Players join")) {
                     return true;
                 }
             }
@@ -30,15 +31,19 @@ public class ServerLogsAction implements Action {
     }
 
     @Override
+    @Transactional
     public BotApiMethod makeAction(Update update) {
+        var text = update.getMessage().getText();
         SendMessage message;
         StringBuilder messageBuilder = new StringBuilder();
-        messageBuilder.append("Logs: \n");
-        serverEventRepository.findAll()
-            .forEach(event -> messageBuilder.append(event.getTime().format(
-                    DateTimeFormatter.ofPattern("dd.MM HH:mm"))).append(" ")
-                .append(event.getPlayer().getName()).append(" ").append(event.getAction())
-                .append("\n"));
+        if (text.equals("Cancel New Players")) {
+            subscriptionRepository.deleteByTelegramUserIdAndType(update.getMessage().getFrom().getId(), SubscriptionType.NEW_PLAYERS);
+            messageBuilder.append("New Players subscription canceled");
+        }
+        if (text.equals("Cancel Players join")) {
+            subscriptionRepository.deleteByTelegramUserIdAndType(update.getMessage().getFrom().getId(), SubscriptionType.PLAYERS_JOIN);
+            messageBuilder.append("Players join subscription canceled");
+        }
         message = new SendMessage(update.getMessage().getChatId().toString(), messageBuilder.toString());
         message.setReplyMarkup(keyboards.getDefaultKeyboard());
         return message;

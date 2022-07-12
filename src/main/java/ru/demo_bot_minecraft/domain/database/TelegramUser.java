@@ -1,12 +1,12 @@
-package ru.demo_bot_minecraft.domain;
+package ru.demo_bot_minecraft.domain.database;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 
 @Data
@@ -14,9 +14,12 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@EqualsAndHashCode
-@ToString
-public class Player {
-    String id;
-    String name;
+@Entity
+public class TelegramUser {
+    @Id
+    Long id;
+    String firstName;
+    boolean isBot;
+    String lastName;
+    String userName;
 }
