@@ -2,6 +2,7 @@ package ru.demo_bot_minecraft.action;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -36,7 +37,8 @@ public class ServerLogsAction implements Action {
         SendMessage message;
         StringBuilder messageBuilder = new StringBuilder();
         messageBuilder.append("Logs: \n");
-        serverEventRepository.findAllByTimeBetween(LocalDate.now().atStartOfDay(), LocalDateTime.now())
+        serverEventRepository.findAllByTimeBetween(LocalDate.now().atStartOfDay(), LocalDateTime.now(
+                ZoneId.of("Europe/Moscow")))
             .forEach(event -> messageBuilder.append(event.getTime().format(
                     DateTimeFormatter.ofPattern("dd.MM HH:mm"))).append(" ")
                 .append(event.getPlayer().getName()).append(" ").append(event.getAction())
