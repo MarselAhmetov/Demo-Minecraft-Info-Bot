@@ -1,6 +1,7 @@
 package ru.demo_bot_minecraft.controller;
 
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,5 +17,10 @@ public class WebhookController {
     @PostMapping("/")
     public BotApiMethod<?> onUpdateReceived(@RequestBody Update update) {
         return bot.onWebhookUpdateReceived(update);
+    }
+
+    @PostMapping("/test")
+    public ResponseEntity<String> test() {
+        return ResponseEntity.ok("Hi there!");
     }
 }
