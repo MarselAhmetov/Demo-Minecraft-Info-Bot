@@ -8,43 +8,47 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import ru.demo_bot_minecraft.domain.enums.BotState;
+import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
 import ru.demo_bot_minecraft.repository.ServerEventRepository;
 
 @Component
 @RequiredArgsConstructor
-public class ServerLogsAction implements Action {
+public class ServerLogsReply implements Reply<Message> {
 
     private final ServerEventRepository serverEventRepository;
     private final Keyboards keyboards;
 
     @Override
-    public boolean getPredicate(Update update) {
-        if (update.hasMessage()) {
-            var message = update.getMessage();
-            if (message.hasText()) {
-                var text = message.getText();
-                if (text.equals("Logs")) {
-                    return true;
-                }
-            }
-        }
-        return false;
+    public boolean predicate(Message message) {
+        return message.getText().equals(RequestMessagesEnum.LOGS.getMessage());
     }
 
     @Override
-    public BotApiMethod makeAction(Update update) {
-        SendMessage message;
+    public BotApiMethod<?> getReply(Message message) {
+        SendMessage sendMessage;
         StringBuilder messageBuilder = new StringBuilder();
         messageBuilder.append("Logs: \n");
-        serverEventRepository.findAllByTimeBetween(LocalDate.now().atStartOfDay(), LocalDateTime.now(
+        serverEventRepository.findAllByTimeBetween(LocalDate.now(ZoneId.of("Europe/Moscow")).atStartOfDay(), LocalDateTime.now(
                 ZoneId.of("Europe/Moscow")))
             .forEach(event -> messageBuilder.append(event.getTime().format(
                     DateTimeFormatter.ofPattern("dd.MM HH:mm"))).append(" ")
                 .append(event.getPlayer().getName()).append(" ").append(event.getAction())
                 .append("\n"));
-        message = new SendMessage(update.getMessage().getChatId().toString(), messageBuilder.toString());
-        message.setReplyMarkup(keyboards.getDefaultKeyboard());
-        return message;
+        sendMessage = new SendMessage(message.getChatId().toString(), messageBuilder.toString());
+        sendMessage.setReplyMarkup(keyboards.getDefaultKeyboard());
+        return sendMessage;
+    }
+
+    @Override
+    public BotState getState() {
+        return BotState.DEFAULT;
+    }
+
+    @Override
+    public boolean availableInAnyState() {
+        return true;
     }
 }

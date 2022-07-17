@@ -6,7 +6,7 @@ import ru.demo_bot_minecraft.domain.database.ServerStats;
 
 @Component
 public class ServerStatsMapper {
-    public ServerStats toEntity(ru.demo_bot_minecraft.domain.ServerStats serverStats) {
+    public ServerStats toEntity(ru.demo_bot_minecraft.domain.dto.ServerStats serverStats) {
         return ServerStats.builder()
             .text(serverStats.getDescription().getText())
             .name(serverStats.getVersion().getName())

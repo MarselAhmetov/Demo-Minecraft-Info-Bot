@@ -3,6 +3,7 @@ server:
 bot:
   name: ${BOT_NAME}
   token: ${BOT_TOKEN}
+  webhook-path: ${BOT_WEBHOOK_PATH}
 minecraft:
   server:
     address: ${MINECRAFT_SERVER_ADDRESS}

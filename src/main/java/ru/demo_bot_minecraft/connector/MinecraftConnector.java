@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.demo_bot_minecraft.domain.ServerStats;
+import ru.demo_bot_minecraft.domain.dto.ServerStats;
 import ru.demo_bot_minecraft.util.BinaryUtils;
 
 @Data

@@ -1,4 +1,4 @@
-package ru.demo_bot_minecraft.domain;
+package ru.demo_bot_minecraft.domain.dto;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -16,6 +16,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @EqualsAndHashCode
 @ToString
-public class Description {
-    String text;
+public class Version {
+    String name;
+    String protocol;
 }

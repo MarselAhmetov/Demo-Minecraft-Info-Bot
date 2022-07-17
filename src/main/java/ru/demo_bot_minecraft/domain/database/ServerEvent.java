@@ -15,7 +15,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import ru.demo_bot_minecraft.domain.ServerAction;
+import ru.demo_bot_minecraft.domain.dto.ServerAction;
 
 @Data
 @NoArgsConstructor

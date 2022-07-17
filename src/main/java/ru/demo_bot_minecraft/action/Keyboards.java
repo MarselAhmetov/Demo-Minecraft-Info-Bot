@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
+import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
 import ru.demo_bot_minecraft.domain.database.Subscription;
 import ru.demo_bot_minecraft.domain.database.SubscriptionType;
 import ru.demo_bot_minecraft.repository.SubscriptionRepository;
@@ -23,36 +24,37 @@ public class Keyboards {
 
         replyKeyboardMarkup.setSelective(true);
         replyKeyboardMarkup.setResizeKeyboard(true);
-        firstRow.add("Server");
-        firstRow.add("Logs");
-        firstRow.add("Subscriptions");
+        firstRow.add(RequestMessagesEnum.SERVER.getMessage());
+        firstRow.add(RequestMessagesEnum.LOGS.getMessage());
+        firstRow.add(RequestMessagesEnum.SUBSCRIPTION.getMessage());
         rows.add(firstRow);
         replyKeyboardMarkup.setKeyboard(rows);
+        replyKeyboardMarkup.setOneTimeKeyboard(false);
         return replyKeyboardMarkup;
     }
 
-    public ReplyKeyboardMarkup getSubscriptionsKeyboard(List<Subscription> subscriptions) {
-        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
-        List<KeyboardRow> rows = new ArrayList<>();
+    public ReplyKeyboardMarkup getSubscriptionsKeyboard(Long userId) {
+        var subscriptions = subscriptionRepository.findAllByTelegramUserId(userId);
         KeyboardRow firstRow = new KeyboardRow();
 
-        replyKeyboardMarkup.setSelective(true);
-        replyKeyboardMarkup.setResizeKeyboard(true);
         if (subscriptions.stream().noneMatch(sub -> sub.getType().equals(SubscriptionType.NEW_PLAYERS))) {
-            firstRow.add("New Players");
+            firstRow.add(RequestMessagesEnum.NEW_PLAYERS_SUBSCRIPTION.getMessage());
         } else {
-            firstRow.add("Cancel New Players");
-
+            firstRow.add(RequestMessagesEnum.CANCEL_NEW_PLAYERS_SUBSCRIPTION.getMessage());
         }
         if (subscriptions.stream().noneMatch(sub -> sub.getType().equals(SubscriptionType.PLAYERS_JOIN))) {
-            firstRow.add("Players join");
+            firstRow.add(RequestMessagesEnum.PLAYERS_JOIN_SUBSCRIPTION.getMessage());
         } else {
-            firstRow.add("Cancel Players join");
+            firstRow.add(RequestMessagesEnum.CANCEL_PLAYERS_JOIN_SUBSCRIPTION.getMessage());
 
         }
-        firstRow.add("Home menu");
+        firstRow.add(RequestMessagesEnum.MAIN_MENU.getMessage());
+        List<KeyboardRow> rows = new ArrayList<>();
         rows.add(firstRow);
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         replyKeyboardMarkup.setKeyboard(rows);
+        replyKeyboardMarkup.setSelective(true);
+        replyKeyboardMarkup.setResizeKeyboard(true);
         return replyKeyboardMarkup;
     }
 

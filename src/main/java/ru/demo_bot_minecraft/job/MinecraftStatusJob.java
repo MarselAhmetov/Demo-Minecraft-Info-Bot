@@ -12,7 +12,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import ru.demo_bot_minecraft.domain.ServerAction;
+import ru.demo_bot_minecraft.domain.dto.ServerAction;
 import ru.demo_bot_minecraft.domain.database.Player;
 import ru.demo_bot_minecraft.domain.database.ServerEvent;
 import ru.demo_bot_minecraft.domain.database.ServerStats;
@@ -59,7 +59,8 @@ public class MinecraftStatusJob {
         serverStatsRepository.updateData(serverStatsMapper.toEntity(currentServerData));
     }
 
-    private List<ServerEvent> checkEvent(ru.demo_bot_minecraft.domain.ServerStats currentServerData, ServerStats lastCheckData) {
+    private List<ServerEvent> checkEvent(
+        ru.demo_bot_minecraft.domain.dto.ServerStats currentServerData, ServerStats lastCheckData) {
         List<ServerEvent> events = new ArrayList<>();
 
         if (lastCheckData != null && !isDataEquals(currentServerData, lastCheckData)) {
@@ -84,24 +85,23 @@ public class MinecraftStatusJob {
                             boolean isPlayerNew = !playerRepository.existsById(player.getId());
                             var subscriptions = subscriptionRepository.findAll();
                             if (isPlayerNew) {
-                                StringBuilder messageBuilder = new StringBuilder();
-                                messageBuilder.append("NEW player with name: ")
-                                        .append(player.getName())
-                                            .append(" joined to server");
+                                String messageBuilder = "NEW player with name: "
+                                    + player.getName()
+                                    + " joined to server";
                                 subscriptions.stream()
                                     .map(Subscription::getTelegramUser)
                                     .distinct()
-                                    .forEach(user -> applicationEventPublisher.publishEvent(new SendMessageEvent(this, messageBuilder.toString(), user.getId().toString())));
+                                    .forEach(user -> applicationEventPublisher.publishEvent(new SendMessageEvent(this,
+                                        messageBuilder, user.getId().toString())));
                             } else {
-                                StringBuilder messageBuilder = new StringBuilder();
-                                messageBuilder
-                                    .append(player.getName())
-                                    .append(" joined to server");
+                                String messageBuilder = player.getName()
+                                    + " joined to server";
                                 subscriptions.stream()
                                     .filter(subscription -> subscription.getType().equals(SubscriptionType.PLAYERS_JOIN))
                                     .map(Subscription::getTelegramUser)
                                     .distinct()
-                                    .forEach(user -> applicationEventPublisher.publishEvent(new SendMessageEvent(this, messageBuilder.toString(), user.getId().toString())));
+                                    .forEach(user -> applicationEventPublisher.publishEvent(new SendMessageEvent(this,
+                                        messageBuilder, user.getId().toString())));
                             }
                             serverEventRepository.save(ServerEvent.builder()
                                 .player(getOrSavePlayer(player))
@@ -130,7 +130,7 @@ public class MinecraftStatusJob {
         return player;
     }
 
-    private boolean isDataEquals(ru.demo_bot_minecraft.domain.ServerStats currentServerData, ServerStats lastCheckData) {
+    private boolean isDataEquals(ru.demo_bot_minecraft.domain.dto.ServerStats currentServerData, ServerStats lastCheckData) {
         return lastCheckData.getName().equals(currentServerData.getVersion().getName()) &&
             lastCheckData.getMaxPlayers() == currentServerData.getPlayersInfo().getMax() &&
             lastCheckData.getOnlinePlayers() == currentServerData.getPlayersInfo().getOnline() &&
