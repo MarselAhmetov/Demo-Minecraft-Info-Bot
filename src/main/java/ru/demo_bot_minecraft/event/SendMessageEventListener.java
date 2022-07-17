@@ -7,13 +7,13 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionalEventListener;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import ru.demo_bot_minecraft.bot.TelegramWebhookBot;
+import ru.demo_bot_minecraft.bot.TelegramBot;
 
 @Component
 @RequiredArgsConstructor
 public class SendMessageEventListener {
 
-    private final TelegramWebhookBot telegramBot;
+    private final TelegramBot telegramBot;
 
     @SneakyThrows
     @TransactionalEventListener(fallbackExecution = true)
