@@ -1,4 +1,4 @@
-package ru.demo_bot_minecraft.action;
+package ru.demo_bot_minecraft.domain;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,8 +26,13 @@ public class Keyboards {
         replyKeyboardMarkup.setResizeKeyboard(true);
         firstRow.add(RequestMessagesEnum.SERVER.getMessage());
         firstRow.add(RequestMessagesEnum.LOGS.getMessage());
-        firstRow.add(RequestMessagesEnum.SUBSCRIPTION.getMessage());
+
+        KeyboardRow secondRow = new KeyboardRow();
+
+        secondRow.add(RequestMessagesEnum.SUBSCRIPTION.getMessage());
+        secondRow.add(RequestMessagesEnum.PLAY_TIME.getMessage());
         rows.add(firstRow);
+        rows.add(secondRow);
         replyKeyboardMarkup.setKeyboard(rows);
         replyKeyboardMarkup.setOneTimeKeyboard(false);
         return replyKeyboardMarkup;
@@ -51,6 +56,29 @@ public class Keyboards {
         firstRow.add(RequestMessagesEnum.MAIN_MENU.getMessage());
         List<KeyboardRow> rows = new ArrayList<>();
         rows.add(firstRow);
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+        replyKeyboardMarkup.setKeyboard(rows);
+        replyKeyboardMarkup.setSelective(true);
+        replyKeyboardMarkup.setResizeKeyboard(true);
+        return replyKeyboardMarkup;
+    }
+
+    public ReplyKeyboardMarkup getPlayTimeKeyboard() {
+        KeyboardRow firstRow = new KeyboardRow();
+
+        firstRow.add(RequestMessagesEnum.TODAY.getMessage());
+        firstRow.add(RequestMessagesEnum.YESTERDAY.getMessage());
+        firstRow.add(RequestMessagesEnum.WEEK.getMessage());
+
+        KeyboardRow secondRow = new KeyboardRow();
+
+        secondRow.add(RequestMessagesEnum.MONTH.getMessage());
+        secondRow.add(RequestMessagesEnum.ALL_TIME.getMessage());
+        secondRow.add(RequestMessagesEnum.MAIN_MENU.getMessage());
+
+        List<KeyboardRow> rows = new ArrayList<>();
+        rows.add(firstRow);
+        rows.add(secondRow);
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         replyKeyboardMarkup.setKeyboard(rows);
         replyKeyboardMarkup.setSelective(true);

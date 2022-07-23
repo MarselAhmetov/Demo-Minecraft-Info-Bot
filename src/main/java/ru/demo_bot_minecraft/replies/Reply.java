@@ -1,4 +1,4 @@
-package ru.demo_bot_minecraft.action;
+package ru.demo_bot_minecraft.replies;
 
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import ru.demo_bot_minecraft.domain.enums.BotState;

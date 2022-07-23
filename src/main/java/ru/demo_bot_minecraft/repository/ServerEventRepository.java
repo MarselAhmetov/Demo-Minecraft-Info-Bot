@@ -7,6 +7,5 @@ import ru.demo_bot_minecraft.domain.database.ServerEvent;
 
 public interface ServerEventRepository extends JpaRepository<ServerEvent, Long> {
 
-    List<ServerEvent> findAllByTimeBetween(LocalDateTime from, LocalDateTime to);
-
+    List<ServerEvent> findAllByTimeBetweenOrderByTimeAsc(LocalDateTime from, LocalDateTime to);
 }

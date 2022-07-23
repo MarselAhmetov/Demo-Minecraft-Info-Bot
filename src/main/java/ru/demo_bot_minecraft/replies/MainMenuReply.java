@@ -1,4 +1,4 @@
-package ru.demo_bot_minecraft.action;
+package ru.demo_bot_minecraft.replies;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
+import ru.demo_bot_minecraft.domain.Keyboards;
 import ru.demo_bot_minecraft.domain.enums.BotState;
 import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
 import ru.demo_bot_minecraft.repository.TelegramUserRepository;

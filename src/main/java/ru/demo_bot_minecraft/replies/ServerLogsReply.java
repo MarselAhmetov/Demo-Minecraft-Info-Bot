@@ -1,4 +1,4 @@
-package ru.demo_bot_minecraft.action;
+package ru.demo_bot_minecraft.replies;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.Update;
+import ru.demo_bot_minecraft.domain.Keyboards;
 import ru.demo_bot_minecraft.domain.enums.BotState;
 import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
 import ru.demo_bot_minecraft.repository.ServerEventRepository;
@@ -31,7 +31,7 @@ public class ServerLogsReply implements Reply<Message> {
         SendMessage sendMessage;
         StringBuilder messageBuilder = new StringBuilder();
         messageBuilder.append("Logs: \n");
-        serverEventRepository.findAllByTimeBetween(LocalDate.now(ZoneId.of("Europe/Moscow")).atStartOfDay(), LocalDateTime.now(
+        serverEventRepository.findAllByTimeBetweenOrderByTimeAsc(LocalDate.now(ZoneId.of("Europe/Moscow")).atStartOfDay(), LocalDateTime.now(
                 ZoneId.of("Europe/Moscow")))
             .forEach(event -> messageBuilder.append(event.getTime().format(
                     DateTimeFormatter.ofPattern("dd.MM HH:mm"))).append(" ")
