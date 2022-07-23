@@ -54,7 +54,6 @@ public class MinecraftStatusJob {
         ServerStats lastCheckData = serverStatsRepository.getServerStats().orElse(null);
         currentCheckTime = LocalDateTime.now(ZoneId.of("Europe/Moscow"));
         var currentServerData = minecraftService.getMinecraftServerStats(address, port);
-        log.info(currentCheckTime.toString() + " " + currentServerData.toString());
         var newEvents = checkEvent(currentServerData, lastCheckData);
         serverStatsRepository.updateData(serverStatsMapper.toEntity(currentServerData));
     }
