@@ -40,6 +40,8 @@ public class StatisticReply implements Reply<Message> {
     public static final Integer SECONDS_IN_HOUR = 3600;
     public static final Integer SECONDS_IN_MINUTES = 60;
 
+    public static final String dateRegex = "(3[0-1]|[1-2]\\d|0[1-9]).(1[0-2]|0[1-9]).\\d{4}";
+
     @Override
     public boolean predicate(Message message) {
         var text = message.getText();
@@ -104,11 +106,11 @@ public class StatisticReply implements Reply<Message> {
             return serverEventRepository.findAll(Sort.by(Sort.Direction.ASC, "time"));
         }
 
-        String dateRegex = "dd.MM.yyyy";
-        boolean isDate = GenericValidator.isDate(text, dateRegex, true);
+        String dateFormat = "dd.MM.yyyy";
+        boolean isDate = GenericValidator.isDate(text, dateFormat, true);
 
         if (isDate) {
-            var date = LocalDate.parse(text, DateTimeFormatter.ofPattern(dateRegex));
+            var date = LocalDate.parse(text, DateTimeFormatter.ofPattern(dateFormat));
             return serverEventRepository.findAllByTimeBetweenOrderByTimeAsc(
                 date.atStartOfDay(),
                 date.plusDays(1).atStartOfDay()
@@ -154,9 +156,8 @@ public class StatisticReply implements Reply<Message> {
             return true;
         }
 
-        String regex = "(3[0-1]|[1-2]\\d|0[1-9]).(1[0-2]|0[1-9]).\\d{4}";
         if (text.length() > 10) {
-            String[] matches = Pattern.compile(regex)
+            String[] matches = Pattern.compile(dateRegex)
                 .matcher(text)
                 .results()
                 .map(MatchResult::group)
