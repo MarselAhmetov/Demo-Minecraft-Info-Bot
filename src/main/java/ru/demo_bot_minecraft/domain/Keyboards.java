@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
+import ru.demo_bot_minecraft.domain.database.TelegramUser;
+import ru.demo_bot_minecraft.domain.enums.BotState;
 import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
 import ru.demo_bot_minecraft.domain.database.Subscription;
 import ru.demo_bot_minecraft.domain.database.SubscriptionType;
@@ -84,6 +86,14 @@ public class Keyboards {
         replyKeyboardMarkup.setSelective(true);
         replyKeyboardMarkup.setResizeKeyboard(true);
         return replyKeyboardMarkup;
+    }
+
+    public ReplyKeyboardMarkup getByState(TelegramUser user) {
+        return switch (user.getBotState()) {
+            case DEFAULT -> getDefaultKeyboard();
+            case SUBSCRIPTION -> getSubscriptionsKeyboard(user.getId());
+            case PLAY_TIME -> getPlayTimeKeyboard();
+        };
     }
 
 }
