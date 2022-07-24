@@ -148,14 +148,15 @@ public class StatisticReply implements Reply<Message> {
             return result;
         }
 
-        String dateRegex = "dd.MM.yyyy";
-        boolean isDate = GenericValidator.isDate(text, dateRegex, true);
+        String dateFormat = "dd.MM.yyyy";
+        boolean isDate = GenericValidator.isDate(text, dateFormat, true);
         if (isDate) {
             return true;
         }
 
+        String regex = "(3[0-1]|[1-2]\\d|0[1-9]).(1[0-2]|0[1-9]).\\d{4}";
         if (text.length() > 10) {
-            String[] matches = Pattern.compile(dateRegex)
+            String[] matches = Pattern.compile(regex)
                 .matcher(text)
                 .results()
                 .map(MatchResult::group)
