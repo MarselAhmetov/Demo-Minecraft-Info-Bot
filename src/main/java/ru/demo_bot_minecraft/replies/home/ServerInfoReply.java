@@ -1,4 +1,4 @@
-package ru.demo_bot_minecraft.replies;
+package ru.demo_bot_minecraft.replies.home;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +11,7 @@ import ru.demo_bot_minecraft.domain.enums.BotMessageEnum;
 import ru.demo_bot_minecraft.domain.dto.ServerStats;
 import ru.demo_bot_minecraft.domain.enums.BotState;
 import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
+import ru.demo_bot_minecraft.replies.Reply;
 import ru.demo_bot_minecraft.service.MinecraftService;
 
 @Component

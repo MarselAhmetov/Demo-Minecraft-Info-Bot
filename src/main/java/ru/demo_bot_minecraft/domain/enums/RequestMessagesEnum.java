@@ -1,21 +1,22 @@
 package ru.demo_bot_minecraft.domain.enums;
 
 public enum RequestMessagesEnum {
-    SERVER("Server"),
-    PLAY_TIME("Play time"),
-    LOGS("Logs"),
-    SUBSCRIPTION("Subscriptions"),
-    NEW_PLAYERS_SUBSCRIPTION("New players"),
-    PLAYERS_JOIN_SUBSCRIPTION("Players join"),
-    CANCEL_NEW_PLAYERS_SUBSCRIPTION("Cancel new players"),
-    CANCEL_PLAYERS_JOIN_SUBSCRIPTION("Cancel players join"),
-    MAIN_MENU("Main menu"),
+    SERVER("Сервер"),
+    PLAY_TIME("Игровое время"),
+    LOGS("Логи"),
+    SUBSCRIPTION("Подписки"),
+    NEW_PLAYERS_SUBSCRIPTION("Новые игроки"),
+    PLAYERS_JOIN_SUBSCRIPTION("Подключения игроков"),
+    CANCEL_NEW_PLAYERS_SUBSCRIPTION("Отписаться от \"Новые игроки\""),
+    CANCEL_PLAYERS_JOIN_SUBSCRIPTION("Отписаться от \"Подключения игроков\""),
+    MAIN_MENU("В главное меню"),
 
-    TODAY("Today"),
-    YESTERDAY("Yesterday"),
-    MONTH("Month"),
-    WEEK("Week"),
-    ALL_TIME("All time");
+    TODAY("Сегодня"),
+    YESTERDAY("Вчера"),
+    MONTH("Месяц"),
+    WEEK("Неделя"),
+    ALL_TIME("Все время"),
+    START("/start");
     private final String message;
 
     RequestMessagesEnum(String message) {

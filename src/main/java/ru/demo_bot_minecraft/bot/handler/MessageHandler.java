@@ -11,7 +11,9 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.demo_bot_minecraft.domain.Keyboards;
 import ru.demo_bot_minecraft.dispatcher.StateDispatcher;
 import ru.demo_bot_minecraft.domain.database.TelegramUser;
+import ru.demo_bot_minecraft.domain.enums.BotMessageEnum;
 import ru.demo_bot_minecraft.domain.enums.BotState;
+import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
 import ru.demo_bot_minecraft.repository.TelegramUserRepository;
 
 @Component
@@ -30,7 +32,7 @@ public class MessageHandler {
         if (inputText == null) {
             throw new IllegalArgumentException();
         }
-        if (inputText.equals("/start")) {
+        if (inputText.equals(RequestMessagesEnum.START.getMessage())) {
             return getStartMessage(chatId);
         }
         var state = telegramUserRepository.findById(message.getFrom().getId())
@@ -39,7 +41,7 @@ public class MessageHandler {
     }
 
     private SendMessage getStartMessage(String chatId) {
-        SendMessage sendMessage = new SendMessage(chatId, "Hello there!");
+        SendMessage sendMessage = new SendMessage(chatId, BotMessageEnum.WELCOME.getMessage());
         sendMessage.enableMarkdown(true);
         sendMessage.setReplyMarkup(keyboards.getDefaultKeyboard());
         return sendMessage;

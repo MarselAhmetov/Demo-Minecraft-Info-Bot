@@ -84,9 +84,9 @@ public class MinecraftStatusJob {
                             boolean isPlayerNew = !playerRepository.existsById(player.getId());
                             var subscriptions = subscriptionRepository.findAll();
                             if (isPlayerNew) {
-                                String messageBuilder = "NEW player with name: "
+                                String messageBuilder = "НОВЫЙ игрок : "
                                     + player.getName()
-                                    + " joined to server";
+                                    + " зашел на сервер";
                                 subscriptions.stream()
                                     .map(Subscription::getTelegramUser)
                                     .distinct()
@@ -94,7 +94,7 @@ public class MinecraftStatusJob {
                                         messageBuilder, user.getId().toString())));
                             } else {
                                 String messageBuilder = player.getName()
-                                    + " joined to server";
+                                    + " зашел на сервер";
                                 subscriptions.stream()
                                     .filter(subscription -> subscription.getType().equals(SubscriptionType.PLAYERS_JOIN))
                                     .map(Subscription::getTelegramUser)

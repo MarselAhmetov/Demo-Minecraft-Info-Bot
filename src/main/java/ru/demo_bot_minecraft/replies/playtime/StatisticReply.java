@@ -1,4 +1,4 @@
-package ru.demo_bot_minecraft.replies;
+package ru.demo_bot_minecraft.replies.playtime;
 
 import java.time.DayOfWeek;
 import java.time.Duration;
@@ -26,8 +26,10 @@ import ru.demo_bot_minecraft.domain.Keyboards;
 import ru.demo_bot_minecraft.domain.database.ServerEvent;
 import ru.demo_bot_minecraft.domain.dto.PlayHistory;
 import ru.demo_bot_minecraft.domain.dto.ServerAction;
+import ru.demo_bot_minecraft.domain.enums.BotMessageEnum;
 import ru.demo_bot_minecraft.domain.enums.BotState;
 import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
+import ru.demo_bot_minecraft.replies.Reply;
 import ru.demo_bot_minecraft.repository.ServerEventRepository;
 
 @Component
@@ -58,7 +60,7 @@ public class StatisticReply implements Reply<Message> {
         playHistories.sort((o1, o2) -> o2.getPlayTimeSeconds().compareTo(o1.getPlayTimeSeconds()));
         SendMessage sendMessage;
         StringBuilder messageBuilder = new StringBuilder();
-        messageBuilder.append("Play time: \n");
+        messageBuilder.append(BotMessageEnum.PLAY_TIME_DATA.getMessage());
         playHistories.forEach(playHistory -> messageBuilder.append(playHistory.getPlayerName()).append(" ")
             .append(playHistory.getPlayTimeSeconds() / SECONDS_IN_HOUR).append(":")
             .append((playHistory.getPlayTimeSeconds() % SECONDS_IN_HOUR) / SECONDS_IN_MINUTES).append(":")

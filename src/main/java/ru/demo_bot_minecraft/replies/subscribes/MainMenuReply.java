@@ -1,4 +1,4 @@
-package ru.demo_bot_minecraft.replies;
+package ru.demo_bot_minecraft.replies.subscribes;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -7,8 +7,10 @@ import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.demo_bot_minecraft.domain.Keyboards;
+import ru.demo_bot_minecraft.domain.enums.BotMessageEnum;
 import ru.demo_bot_minecraft.domain.enums.BotState;
 import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
+import ru.demo_bot_minecraft.replies.Reply;
 import ru.demo_bot_minecraft.repository.TelegramUserRepository;
 
 @Component
@@ -29,7 +31,7 @@ public class MainMenuReply implements Reply<Message> {
         userRepository.setState(message.getFrom().getId(), BotState.DEFAULT);
         return SendMessage.builder()
             .chatId(message.getChatId().toString())
-            .text("Main menu")
+            .text(BotMessageEnum.MAIN_MENU.getMessage())
             .replyMarkup(keyboards.getDefaultKeyboard())
             .build();
     }
