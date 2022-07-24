@@ -174,25 +174,26 @@ public class StatisticReply implements Reply<Message> {
         Map<String, LocalDateTime> leftTimes = new HashMap<>();
 
         for (ServerEvent event : events) {
+            var playerName = event.getPlayer().getName();
+            result.putIfAbsent(playerName, PlayHistory.builder()
+                .playerName(playerName)
+                .playTimeSeconds(0L)
+                .build());
+
             if (event.getAction().equals(ServerAction.JOIN)) {
-                var playerName = event.getPlayer().getName();
                 joinTimes.put(playerName, event.getTime());
-                result.putIfAbsent(playerName, PlayHistory.builder()
-                    .playerName(playerName)
-                    .playTimeSeconds(0L)
-                    .build());
             }
             if (event.getAction().equals(ServerAction.LEFT)) {
                 var leftTime = event.getTime();
                 leftTimes.put(event.getPlayer().getName(), leftTime);
-                var joinTime = joinTimes.get(event.getPlayer().getName());
+                var joinTime = joinTimes.get(playerName);
 
                 if (joinTime != null) {
                     Duration duration = Duration.between(joinTime, leftTime);
-                    result.get(event.getPlayer().getName()).addPlayTimeSeconds(duration.getSeconds());
+                    result.get(playerName).addPlayTimeSeconds(duration.getSeconds());
                 } else {
                     Duration duration = Duration.between(leftTime.toLocalDate().atStartOfDay(), leftTime);
-                    result.get(event.getPlayer().getName()).addPlayTimeSeconds(duration.getSeconds());
+                    result.get(playerName).addPlayTimeSeconds(duration.getSeconds());
 
                 }
             }
