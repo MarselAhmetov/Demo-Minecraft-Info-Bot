@@ -2,6 +2,7 @@ package ru.demo_bot_minecraft.job;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -83,7 +84,7 @@ public class MinecraftStatusJob {
 
     private ServerInfoDowntime createDowntime(String error) {
         var downtime = ServerInfoDowntime.builder()
-            .downtime(LocalDateTime.now())
+            .downtime(LocalDateTime.now(ZoneId.of("Europe/Moscow")))
             .error(error)
             .build();
         downtime = downtimeRepository.save(downtime);
@@ -97,7 +98,7 @@ public class MinecraftStatusJob {
 
     private Optional<ServerInfoDowntime> setUptimeToCurrentDowntime() {
         return getCurrentDowntime().map(downtime -> {
-            downtime.setUptime(LocalDateTime.now());
+            downtime.setUptime(LocalDateTime.now(ZoneId.of("Europe/Moscow")));
             downtime = downtimeRepository.save(downtime);
             sendUptimeReport(downtime);
             return downtime;
@@ -106,7 +107,8 @@ public class MinecraftStatusJob {
 
     private void sendDowntimeReport(ServerInfoDowntime downtime) {
         var subscriptions = subscriptionRepository.findAllByType(SubscriptionType.DOWNTIME);
-        String messageBuilder = "Сервер упал в " + downtime.getDowntime();
+        String messageBuilder = "Сервер упал в " + downtime.getDowntime().format(
+            DateTimeFormatter.ofPattern("dd.MM HH:mm"));
         subscriptions.stream()
             .map(Subscription::getTelegramUser)
             .distinct()
@@ -116,7 +118,8 @@ public class MinecraftStatusJob {
 
     private void sendUptimeReport(ServerInfoDowntime downtime) {
         var subscriptions = subscriptionRepository.findAllByType(SubscriptionType.DOWNTIME);
-        String messageBuilder = "Сервер встал в " + downtime.getUptime();
+        String messageBuilder = "Сервер встал в " + downtime.getUptime().format(
+            DateTimeFormatter.ofPattern("dd.MM HH:mm"));
         subscriptions.stream()
             .map(Subscription::getTelegramUser)
             .distinct()
