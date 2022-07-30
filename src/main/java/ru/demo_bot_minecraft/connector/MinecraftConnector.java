@@ -5,23 +5,29 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.demo_bot_minecraft.domain.dto.ServerStats;
+import ru.demo_bot_minecraft.domain.dto.ServerStatsResponse;
 import ru.demo_bot_minecraft.util.BinaryUtils;
 
 @Data
 @Component
-@NoArgsConstructor
+@RequiredArgsConstructor
+@Slf4j
 public class MinecraftConnector {
     private ObjectMapper mapper = new ObjectMapper();
 
-    public ServerStats sendRequest(String address, Integer port) {
+    public ServerStatsResponse sendRequest(String address, Integer port) {
         try {
-            Socket clientSocket = new Socket(address, port);
+            Socket clientSocket = new Socket();
+            clientSocket.connect(new InetSocketAddress(address, port), 5000);
 
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             DataOutputStream outputStream = new DataOutputStream(byteArrayOutputStream);
@@ -54,9 +60,13 @@ public class MinecraftConnector {
             ServerStats serverStats = mapper.readValue(json, ServerStats.class);
 
             clientSocket.close();
-            return serverStats;
+            return ServerStatsResponse.builder()
+                .serverStats(Optional.ofNullable(serverStats))
+                .build();
         } catch (Exception e) {
-            throw new IllegalArgumentException(e.getMessage());
+            return ServerStatsResponse.builder()
+                .error(e.getMessage())
+                .build();
         }
     }
 }

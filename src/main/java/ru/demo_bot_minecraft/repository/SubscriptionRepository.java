@@ -8,4 +8,5 @@ import ru.demo_bot_minecraft.domain.database.SubscriptionType;
 public interface SubscriptionRepository extends JpaRepository<Subscription, Long> {
     List<Subscription> findAllByTelegramUserId(Long id);
     void deleteByTelegramUserIdAndType(Long id, SubscriptionType type);
+    List<Subscription> findAllByType(SubscriptionType type);
 }

@@ -8,7 +8,6 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.demo_bot_minecraft.domain.Keyboards;
 import ru.demo_bot_minecraft.domain.enums.BotMessageEnum;
-import ru.demo_bot_minecraft.domain.dto.ServerStats;
 import ru.demo_bot_minecraft.domain.enums.BotState;
 import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
 import ru.demo_bot_minecraft.replies.Reply;
@@ -32,18 +31,25 @@ public class ServerInfoReply implements Reply<Message> {
 
     @Override
     public BotApiMethod<?> getReply(Message message) {
-        ServerStats serverStats = minecraftService.getMinecraftServerStats(address, port);
-        StringBuilder messageBuilder = new StringBuilder();
-        serverStats.getPlayersInfo().getPlayersOnline()
+        return minecraftService.getMinecraftServerStats(address, port).getServerStats()
+            .map(serverStats -> {
+                StringBuilder messageBuilder = new StringBuilder();
+                serverStats.getPlayersInfo().getPlayersOnline()
                     .forEach(player -> messageBuilder.append(player.getName()).append("\n"));
-        var text = BotMessageEnum.SERVER_INFO.getMessage().formatted(serverStats.getDescription().getText(),
-            serverStats.getPlayersInfo().getOnline() + "/" + serverStats.getPlayersInfo().getMax(),
-            messageBuilder.toString());
-        return SendMessage.builder()
-            .chatId(message.getChatId().toString())
-            .text(text)
-            .replyMarkup(keyboards.getDefaultKeyboard())
-            .build();
+                var text = BotMessageEnum.SERVER_INFO.getMessage().formatted(serverStats.getDescription().getText(),
+                    serverStats.getPlayersInfo().getOnline() + "/" + serverStats.getPlayersInfo().getMax(),
+                    messageBuilder.toString());
+                return SendMessage.builder()
+                    .chatId(message.getChatId().toString())
+                    .text(text)
+                    .replyMarkup(keyboards.getDefaultKeyboard())
+                    .build();
+            })
+            .orElse(SendMessage.builder()
+                .chatId(message.getChatId().toString())
+                .text("Server is down")
+                .replyMarkup(keyboards.getDefaultKeyboard())
+                .build());
     }
 
     @Override

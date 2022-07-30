@@ -37,9 +37,16 @@ public class MessageHandler {
         if (inputText.equals(RequestMessagesEnum.START.getMessage())) {
             return getStartMessage(chatId);
         }
-        var state = telegramUserRepository.findById(message.getFrom().getId())
-            .map(TelegramUser::getBotState).orElse(BotState.DEFAULT);
-        return stateDispatcher.dispatch(message, state);
+        var user = telegramUserRepository.findById(message.getFrom().getId())
+            .orElse(telegramUserRepository.save(TelegramUser.builder()
+                .id(message.getFrom().getId())
+                .isBot(message.getFrom().getIsBot())
+                .userName(message.getFrom().getUserName())
+                .lastName(message.getFrom().getLastName())
+                .firstName(message.getFrom().getFirstName())
+                .botState(BotState.DEFAULT)
+                .build()));
+        return stateDispatcher.dispatch(message, user.getBotState());
     }
 
     private SendMessage getStartMessage(String chatId) {

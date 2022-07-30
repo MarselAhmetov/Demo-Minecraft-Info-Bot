@@ -53,11 +53,20 @@ public class Keyboards {
             firstRow.add(RequestMessagesEnum.PLAYERS_JOIN_SUBSCRIPTION.getMessage());
         } else {
             firstRow.add(RequestMessagesEnum.CANCEL_PLAYERS_JOIN_SUBSCRIPTION.getMessage());
-
         }
+
+        KeyboardRow secondRow = new KeyboardRow();
+
+        if (subscriptions.stream().noneMatch(sub -> sub.getType().equals(SubscriptionType.DOWNTIME))) {
+            secondRow.add(RequestMessagesEnum.DOWNTIME_SUBSCRIPTION.getMessage());
+        } else {
+            secondRow.add(RequestMessagesEnum.CANCEL_DOWNTIME_SUBSCRIPTION.getMessage());
+        }
+
         firstRow.add(RequestMessagesEnum.MAIN_MENU.getMessage());
         List<KeyboardRow> rows = new ArrayList<>();
         rows.add(firstRow);
+        rows.add(secondRow);
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         replyKeyboardMarkup.setKeyboard(rows);
         replyKeyboardMarkup.setSelective(true);

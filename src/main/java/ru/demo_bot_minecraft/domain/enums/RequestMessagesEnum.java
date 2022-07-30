@@ -7,8 +7,11 @@ public enum RequestMessagesEnum {
     SUBSCRIPTION("Подписки"),
     NEW_PLAYERS_SUBSCRIPTION("Новые игроки"),
     PLAYERS_JOIN_SUBSCRIPTION("Подключения игроков"),
+    DOWNTIME_SUBSCRIPTION("Падения сервера"),
     CANCEL_NEW_PLAYERS_SUBSCRIPTION("Отписаться от \"Новые игроки\""),
     CANCEL_PLAYERS_JOIN_SUBSCRIPTION("Отписаться от \"Подключения игроков\""),
+    CANCEL_DOWNTIME_SUBSCRIPTION("Отписаться от \"Падения сервера\""),
+
     MAIN_MENU("В главное меню"),
 
     TODAY("Сегодня"),
