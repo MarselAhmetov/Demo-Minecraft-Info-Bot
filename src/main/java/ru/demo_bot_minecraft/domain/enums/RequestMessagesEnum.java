@@ -19,7 +19,10 @@ public enum RequestMessagesEnum {
     MONTH("Месяц"),
     WEEK("Неделя"),
     ALL_TIME("Все время"),
-    START("/start");
+    START("/start"),
+    SETTINGS("Настройки"),
+    ADD_NICKNAME("Добавить ник"),
+    REMOVE_NICKNAME("Удалить ник");
     private final String message;
 
     RequestMessagesEnum(String message) {

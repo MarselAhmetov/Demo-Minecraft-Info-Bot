@@ -7,11 +7,10 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import ru.demo_bot_minecraft.domain.database.TelegramUser;
-import ru.demo_bot_minecraft.domain.enums.BotState;
 import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
-import ru.demo_bot_minecraft.domain.database.Subscription;
 import ru.demo_bot_minecraft.domain.database.SubscriptionType;
 import ru.demo_bot_minecraft.repository.SubscriptionRepository;
+import ru.demo_bot_minecraft.repository.TelegramUserRepository;
 
 @Component
 @RequiredArgsConstructor
@@ -33,8 +32,14 @@ public class Keyboards {
 
         secondRow.add(RequestMessagesEnum.SUBSCRIPTION.getMessage());
         secondRow.add(RequestMessagesEnum.PLAY_TIME.getMessage());
+
+        KeyboardRow thirdRow = new KeyboardRow();
+
+        thirdRow.add(RequestMessagesEnum.SETTINGS.getMessage());
         rows.add(firstRow);
         rows.add(secondRow);
+        rows.add(thirdRow);
+
         replyKeyboardMarkup.setKeyboard(rows);
         replyKeyboardMarkup.setOneTimeKeyboard(false);
         return replyKeyboardMarkup;
@@ -97,11 +102,33 @@ public class Keyboards {
         return replyKeyboardMarkup;
     }
 
+    public ReplyKeyboardMarkup getSettingsKeyboard(TelegramUser user) {
+
+        KeyboardRow firstRow = new KeyboardRow();
+        if (user.getMinecraftName() == null) {
+            firstRow.add(RequestMessagesEnum.ADD_NICKNAME.getMessage());
+        } else {
+            firstRow.add(RequestMessagesEnum.REMOVE_NICKNAME.getMessage() + " " + user.getMinecraftName());
+        }
+
+        firstRow.add(RequestMessagesEnum.MAIN_MENU.getMessage());
+
+        List<KeyboardRow> rows = new ArrayList<>();
+        rows.add(firstRow);
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+        replyKeyboardMarkup.setKeyboard(rows);
+        replyKeyboardMarkup.setSelective(true);
+        replyKeyboardMarkup.setResizeKeyboard(true);
+        return replyKeyboardMarkup;
+    }
+
     public ReplyKeyboardMarkup getByState(TelegramUser user) {
         return switch (user.getBotState()) {
             case DEFAULT -> getDefaultKeyboard();
             case SUBSCRIPTION -> getSubscriptionsKeyboard(user.getId());
             case PLAY_TIME -> getPlayTimeKeyboard();
+            case SETTINGS -> getSettingsKeyboard(user);
+            default -> null;
         };
     }
 

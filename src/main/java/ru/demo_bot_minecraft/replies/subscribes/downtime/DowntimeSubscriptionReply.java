@@ -1,4 +1,4 @@
-package ru.demo_bot_minecraft.replies.subscribes;
+package ru.demo_bot_minecraft.replies.subscribes.downtime;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -17,22 +17,22 @@ import ru.demo_bot_minecraft.repository.SubscriptionRepository;
 
 @Component
 @RequiredArgsConstructor
-public class NewPlayersSubscriptionReply implements Reply<Message> {
+public class DowntimeSubscriptionReply implements Reply<Message> {
 
     private final SubscriptionRepository subscriptionRepository;
     private final Keyboards keyboards;
 
     @Override
     public boolean predicate(Message message) {
-        return message.getText().equalsIgnoreCase(RequestMessagesEnum.NEW_PLAYERS_SUBSCRIPTION.getMessage());
+        return message.getText().equalsIgnoreCase(RequestMessagesEnum.DOWNTIME_SUBSCRIPTION.getMessage());
     }
 
     public BotApiMethod<?> getReply(Message message) {
         subscriptionRepository.save(Subscription.builder()
             .telegramUser(TelegramUser.builder().id(message.getFrom().getId()).build())
-            .type(SubscriptionType.NEW_PLAYERS)
+            .type(SubscriptionType.DOWNTIME)
             .build());
-        SendMessage sendMessage = new SendMessage(message.getChatId().toString(), BotMessageEnum.NEW_PLAYERS_SUBSCRIBED.getMessage());
+        SendMessage sendMessage = new SendMessage(message.getChatId().toString(), BotMessageEnum.DOWNTIME_SUBSCRIBED.getMessage());
         sendMessage.setReplyMarkup(keyboards.getSubscriptionsKeyboard(message.getFrom().getId()));
         return sendMessage;
     }

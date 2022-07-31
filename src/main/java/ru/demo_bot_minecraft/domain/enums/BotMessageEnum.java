@@ -20,6 +20,10 @@ public enum BotMessageEnum {
         Игровое время
         """),
 
+    SETTINGS("""
+        Настройки
+        """),
+
     PLAY_TIME_DATA("""
         Игровое время: \n
         """),
@@ -41,6 +45,15 @@ public enum BotMessageEnum {
 
     DOWNTIME_SUBSCRIPTION_CANCELED("""
         Подписка на падения сервера, отменена
+        """),
+    ENTER_YOUR_NICKNAME("""
+        Введите ваш ник
+        """),
+    NICKNAME_ADDED("""
+        Ник добавлен
+        """),
+    NICKNAME_REMOVED("""
+        Ник удален
         """),
     NEW_PLAYERS_SUBSCRIBED("""
         Теперь вы будете получать сообщения, когда игроки заходят на сервер

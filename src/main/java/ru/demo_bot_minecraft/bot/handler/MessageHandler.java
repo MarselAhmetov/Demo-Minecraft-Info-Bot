@@ -9,8 +9,8 @@ import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import ru.demo_bot_minecraft.domain.Keyboards;
 import ru.demo_bot_minecraft.dispatcher.StateDispatcher;
+import ru.demo_bot_minecraft.domain.Keyboards;
 import ru.demo_bot_minecraft.domain.database.TelegramUser;
 import ru.demo_bot_minecraft.domain.enums.BotMessageEnum;
 import ru.demo_bot_minecraft.domain.enums.BotState;
@@ -37,15 +37,21 @@ public class MessageHandler {
         if (inputText.equals(RequestMessagesEnum.START.getMessage())) {
             return getStartMessage(chatId);
         }
-        var user = telegramUserRepository.findById(message.getFrom().getId())
-            .orElse(telegramUserRepository.save(TelegramUser.builder()
+        var userOptional = telegramUserRepository.findById(message.getFrom().getId());
+        TelegramUser user;
+        if (userOptional.isEmpty()) {
+            user = telegramUserRepository.save(TelegramUser.builder()
                 .id(message.getFrom().getId())
                 .isBot(message.getFrom().getIsBot())
                 .userName(message.getFrom().getUserName())
                 .lastName(message.getFrom().getLastName())
                 .firstName(message.getFrom().getFirstName())
                 .botState(BotState.DEFAULT)
-                .build()));
+                .build());
+        } else {
+            user = userOptional.get();
+        }
+
         return stateDispatcher.dispatch(message, user.getBotState());
     }
 

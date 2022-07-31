@@ -1,4 +1,4 @@
-package ru.demo_bot_minecraft.replies.subscribes;
+package ru.demo_bot_minecraft.replies.settings;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -6,43 +6,40 @@ import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import ru.demo_bot_minecraft.domain.Keyboards;
-import ru.demo_bot_minecraft.domain.database.SubscriptionType;
 import ru.demo_bot_minecraft.domain.enums.BotMessageEnum;
 import ru.demo_bot_minecraft.domain.enums.BotState;
 import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
 import ru.demo_bot_minecraft.replies.Reply;
-import ru.demo_bot_minecraft.repository.SubscriptionRepository;
+import ru.demo_bot_minecraft.repository.TelegramUserRepository;
 
 @Component
 @RequiredArgsConstructor
-public class NewPlayersSubscriptionCancelReply implements Reply<Message> {
+public class AddNicknameReply implements Reply<Message> {
 
-    private final SubscriptionRepository subscriptionRepository;
-    private final Keyboards keyboards;
+    private final TelegramUserRepository telegramUserRepository;
+
 
     @Override
     public boolean predicate(Message message) {
-        return message.getText().equals(RequestMessagesEnum.CANCEL_NEW_PLAYERS_SUBSCRIPTION.getMessage());
+        return message.getText().equals(RequestMessagesEnum.ADD_NICKNAME.getMessage());
     }
 
     @Override
     @Transactional
     public BotApiMethod<?> getReply(Message message) {
-        subscriptionRepository.deleteByTelegramUserIdAndType(message.getFrom().getId(), SubscriptionType.NEW_PLAYERS);
-        SendMessage sendMessage = new SendMessage(message.getChatId().toString(), BotMessageEnum.NEW_PLAYERS_SUBSCRIPTION_CANCELED.getMessage());
-        sendMessage.setReplyMarkup(keyboards.getSubscriptionsKeyboard(message.getFrom().getId()));
+        telegramUserRepository.setState(message.getFrom().getId(), BotState.ADD_NICKNAME);
+        SendMessage sendMessage = new SendMessage(message.getChatId().toString(), BotMessageEnum.ENTER_YOUR_NICKNAME.getMessage());
+        sendMessage.setReplyMarkup(null);
         return sendMessage;
     }
 
     @Override
     public BotState getState() {
-        return BotState.SUBSCRIPTION;
+        return BotState.SETTINGS;
     }
 
     @Override
     public boolean availableInAnyState() {
         return false;
     }
-
 }

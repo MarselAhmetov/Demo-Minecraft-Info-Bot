@@ -1,4 +1,4 @@
-package ru.demo_bot_minecraft.replies.subscribes;
+package ru.demo_bot_minecraft.replies.subscribes.players_join;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

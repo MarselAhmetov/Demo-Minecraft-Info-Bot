@@ -1,11 +1,13 @@
 package ru.demo_bot_minecraft.dispatcher;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import javax.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -17,14 +19,20 @@ import ru.demo_bot_minecraft.domain.enums.BotState;
 import ru.demo_bot_minecraft.repository.TelegramUserRepository;
 
 @Component
-@RequiredArgsConstructor
 public class StateDispatcher {
 
     private final List<Reply<Message>> replies;
-    private final Map<BotState, List<Reply<Message>>> stateReplies;
-    private final List<Reply<Message>> anyStateReplies;
+    private final Map<BotState, List<Reply<Message>>> stateReplies = new HashMap<>();
+    private final Set<Reply<Message>> anyStateReplies = new HashSet<>();
     private final Keyboards keyboards;
     private final TelegramUserRepository userRepository;
+
+    public StateDispatcher(List<Reply<Message>> replies, Keyboards keyboards,
+        TelegramUserRepository userRepository) {
+        this.replies = replies;
+        this.keyboards = keyboards;
+        this.userRepository = userRepository;
+    }
 
     @PostConstruct
     public void post() {

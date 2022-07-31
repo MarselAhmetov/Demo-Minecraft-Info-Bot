@@ -158,6 +158,7 @@ public class MinecraftStatusJob {
                                     + " зашел на сервер";
                                 subscriptions.stream()
                                     .map(Subscription::getTelegramUser)
+                                    .filter(user -> !player.getName().equals(user.getMinecraftName()))
                                     .distinct()
                                     .forEach(user -> applicationEventPublisher.publishEvent(new SendMessageEvent(this,
                                         messageBuilder, user.getId().toString())));
@@ -166,8 +167,8 @@ public class MinecraftStatusJob {
                                 String messageBuilder = player.getName()
                                     + " зашел на сервер";
                                 subscriptions.stream()
-                                    .filter(subscription -> subscription.getType().equals(SubscriptionType.PLAYERS_JOIN))
                                     .map(Subscription::getTelegramUser)
+                                    .filter(user -> !player.getName().equals(user.getMinecraftName()))
                                     .distinct()
                                     .forEach(user -> applicationEventPublisher.publishEvent(new SendMessageEvent(this,
                                         messageBuilder, user.getId().toString())));
