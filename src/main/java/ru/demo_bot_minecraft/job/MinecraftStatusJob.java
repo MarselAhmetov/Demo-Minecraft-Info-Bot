@@ -69,7 +69,7 @@ public class MinecraftStatusJob {
                 } else {
                     downtime = currentDowntimeOptional.get();
                 }
-                log.info("Server downtime in seconds: " + ChronoUnit.SECONDS.between(downtime.getDowntime(), LocalDateTime.now()));
+                log.info("Server downtime in seconds: " + ChronoUnit.SECONDS.between(downtime.getDowntime(), LocalDateTime.now(ZoneId.of("Europe/Moscow"))));
             }
         }
 
