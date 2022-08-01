@@ -28,7 +28,7 @@ public class SubscriptionsReply implements Reply<Message> {
     }
 
     public BotApiMethod<?> getReply(Message message) {
-        telegramUserRepository.setState(message.getFrom().getId(), BotState.SETTINGS);
+        telegramUserRepository.setState(message.getFrom().getId(), BotState.SUBSCRIPTION);
         var subscriptions = subscriptionRepository
             .findAllByTelegramUserId(message.getFrom().getId());
         SendMessage sendMessage;
