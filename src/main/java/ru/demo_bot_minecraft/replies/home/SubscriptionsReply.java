@@ -11,12 +11,14 @@ import ru.demo_bot_minecraft.domain.enums.BotState;
 import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
 import ru.demo_bot_minecraft.replies.Reply;
 import ru.demo_bot_minecraft.repository.SubscriptionRepository;
+import ru.demo_bot_minecraft.repository.TelegramUserRepository;
 
 @Component
 @RequiredArgsConstructor
 public class SubscriptionsReply implements Reply<Message> {
 
     private final SubscriptionRepository subscriptionRepository;
+    private final TelegramUserRepository telegramUserRepository;
     private final Keyboards keyboards;
 
 
@@ -26,6 +28,7 @@ public class SubscriptionsReply implements Reply<Message> {
     }
 
     public BotApiMethod<?> getReply(Message message) {
+        telegramUserRepository.setState(message.getFrom().getId(), BotState.SETTINGS);
         var subscriptions = subscriptionRepository
             .findAllByTelegramUserId(message.getFrom().getId());
         SendMessage sendMessage;
