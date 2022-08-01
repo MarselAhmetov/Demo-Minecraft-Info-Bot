@@ -48,7 +48,7 @@ public class StateDispatcher {
     public BotApiMethod<?> dispatch(Message message, BotState state) {
         Optional<BotApiMethod<?>> optionalBotApiMethod = handleState(message, state);
         if (optionalBotApiMethod.isEmpty()) {
-            return handleOther(message).orElse(new SendMessage(message.getChatId().toString(), "Unexpected error sorry :("));
+            return handleOther(message).orElse(new SendMessage(message.getChatId().toString(), "Неожиданная ошибка :("));
         } else {
             return optionalBotApiMethod.get();
         }

@@ -23,7 +23,7 @@ public class CallbackQueryHandler {
     }
 
     private SendMessage handleDefault(String chatId, String data) {
-            return new SendMessage(chatId, "We received " + data + " but do not know how to handle it yet");
+        return new SendMessage(chatId, "Я получил ваше сообщение:  " + data + ", но пока не знаю как его обрабатывать");
     }
 
 }

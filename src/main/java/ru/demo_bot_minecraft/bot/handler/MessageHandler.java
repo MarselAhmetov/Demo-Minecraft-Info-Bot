@@ -1,8 +1,6 @@
 package ru.demo_bot_minecraft.bot.handler;
 
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
@@ -18,13 +16,12 @@ import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
 import ru.demo_bot_minecraft.repository.TelegramUserRepository;
 
 @Component
-@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @RequiredArgsConstructor
 public class MessageHandler {
 
-    Keyboards keyboards;
-    TelegramUserRepository telegramUserRepository;
-    StateDispatcher stateDispatcher;
+    private final Keyboards keyboards;
+    private final TelegramUserRepository telegramUserRepository;
+    private final StateDispatcher stateDispatcher;
     @Transactional
     public BotApiMethod<?> answerMessage(Update update) {
         Message message = update.getMessage();

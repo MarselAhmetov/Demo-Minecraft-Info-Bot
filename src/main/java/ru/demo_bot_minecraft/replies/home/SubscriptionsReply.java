@@ -27,11 +27,19 @@ public class SubscriptionsReply implements Reply<Message> {
         return message.getText().equals(RequestMessagesEnum.SUBSCRIPTION.getMessage());
     }
 
+    @Override
     public BotApiMethod<?> getReply(Message message) {
         telegramUserRepository.setState(message.getFrom().getId(), BotState.SUBSCRIPTION);
+        return SendMessage.builder()
+            .chatId(message.getChatId().toString())
+            .replyMarkup(keyboards.getSubscriptionsKeyboard(message.getFrom().getId()))
+            .text(buildMessage(message))
+            .build();
+    }
+
+    private String buildMessage(Message message) {
         var subscriptions = subscriptionRepository
             .findAllByTelegramUserId(message.getFrom().getId());
-        SendMessage sendMessage;
         StringBuilder messageBuilder = new StringBuilder();
         if (!subscriptions.isEmpty()) {
             messageBuilder.append(BotMessageEnum.CURRENT_SUBSCRIPTIONS.getMessage());
@@ -39,9 +47,7 @@ public class SubscriptionsReply implements Reply<Message> {
         } else {
             messageBuilder.append(BotMessageEnum.SUBSCRIPTION.getMessage());
         }
-        sendMessage = new SendMessage(message.getChatId().toString(), messageBuilder.toString());
-        sendMessage.setReplyMarkup(keyboards.getSubscriptionsKeyboard(message.getFrom().getId()));
-        return sendMessage;
+        return messageBuilder.toString();
     }
 
     @Override
