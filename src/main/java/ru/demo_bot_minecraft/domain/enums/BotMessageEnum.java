@@ -69,7 +69,10 @@ public enum BotMessageEnum {
          """),
     USE_THE_KEYBOARD("""
          Пожалуйста, используй клавиатуру
-         """);
+         """),
+    SERVER_IS_UNAVAILABLE("""
+        Сервер недоступен
+        """);
 
 
 

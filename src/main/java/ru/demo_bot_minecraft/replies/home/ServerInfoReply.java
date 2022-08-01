@@ -47,7 +47,7 @@ public class ServerInfoReply implements Reply<Message> {
             })
             .orElse(SendMessage.builder()
                 .chatId(message.getChatId().toString())
-                .text("Server is down")
+                .text(BotMessageEnum.SERVER_IS_UNAVAILABLE.getMessage())
                 .replyMarkup(keyboards.getDefaultKeyboard())
                 .build());
     }
