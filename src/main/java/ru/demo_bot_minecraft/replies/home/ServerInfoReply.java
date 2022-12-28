@@ -7,6 +7,8 @@ import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.demo_bot_minecraft.domain.Keyboards;
+import ru.demo_bot_minecraft.domain.dto.Description;
+import ru.demo_bot_minecraft.domain.dto.Extra;
 import ru.demo_bot_minecraft.domain.enums.BotMessageEnum;
 import ru.demo_bot_minecraft.domain.enums.BotState;
 import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
@@ -36,7 +38,7 @@ public class ServerInfoReply implements Reply<Message> {
                 StringBuilder messageBuilder = new StringBuilder();
                 serverStats.getPlayersInfo().getPlayersOnline()
                     .forEach(player -> messageBuilder.append(player.getName()).append("\n"));
-                var text = BotMessageEnum.SERVER_INFO.getMessage().formatted(serverStats.getDescription().getText(),
+                var text = BotMessageEnum.SERVER_INFO.getMessage().formatted(getText(serverStats.getDescription()),
                     serverStats.getPlayersInfo().getOnline() + "/" + serverStats.getPlayersInfo().getMax(),
                     messageBuilder.toString());
                 return SendMessage.builder()
@@ -50,6 +52,19 @@ public class ServerInfoReply implements Reply<Message> {
                 .text(BotMessageEnum.SERVER_IS_UNAVAILABLE.getMessage())
                 .replyMarkup(keyboards.getDefaultKeyboard())
                 .build());
+    }
+
+    private String getText(Description description) {
+        if (description.getText() != null && !description.getText().isEmpty()) {
+            return description.getText();
+        } else if (description.getExtra() != null && !description.getExtra().isEmpty()) {
+            StringBuilder stringBuilder = new StringBuilder();
+            description.getExtra().stream().map(Extra::getText)
+                .forEach(stringBuilder::append);
+            return stringBuilder.toString();
+        } else {
+            return "Сервер";
+        }
     }
 
     @Override

@@ -1,6 +1,5 @@
 package ru.demo_bot_minecraft.domain.dto;
 
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +16,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @EqualsAndHashCode
 @ToString
-public class Description {
-    List<Extra> extra;
+public class Extra {
+    String color;
     String text;
 }
