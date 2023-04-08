@@ -55,7 +55,16 @@ public class MinecraftConnector {
             inputStream.read(rawData);                // fill byte array with JSON data
 
             String json = new String(rawData, StandardCharsets.UTF_8);
-            json = json.substring(0, json.lastIndexOf(",\"favicon\"") >= 0 ? json.lastIndexOf(",\"favicon\"") : json.length()) + "}";
+            int faviconIndex = json.lastIndexOf(",\"favicon\"");
+            // TODO add response configuration
+            if (faviconIndex >= 0) {
+                json = json.substring(0, faviconIndex) + "}";
+            }
+
+            int forgeDataIndex = json.lastIndexOf(",\"forgeData\":");
+            if (forgeDataIndex >= 0) {
+                json = json.substring(0, forgeDataIndex) + "}";
+            }
 
             ServerStats serverStats = mapper.readValue(json, ServerStats.class);
 
