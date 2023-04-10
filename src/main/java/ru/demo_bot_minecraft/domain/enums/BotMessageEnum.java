@@ -49,6 +49,24 @@ public enum BotMessageEnum {
     ENTER_YOUR_NICKNAME("""
         Введите ваш ник
         """),
+    CURRENT_ALIASES("""
+        Ваши алиасы: \n
+        """),
+    ENTER_PLAYER_NAME_AND_ALIAS("""
+        Введите ник игрока и его алиас через пробел: NickName Alias
+        """),
+    ALIAS_ADDED("""
+        Алиас добавлен
+        """),
+    PLAYER_NOT_FOUND("""
+        Игрок с ником %s не найден
+        """),
+    ALIAS_REMOVED("""
+        Алиас удален
+        """),
+    ENTER_PLAYER_NAME_TO_REMOVE_ALIAS("""
+        Введите алиас который хотите удалить.
+        """),
     NICKNAME_ADDED("""
         Ник добавлен
         """),

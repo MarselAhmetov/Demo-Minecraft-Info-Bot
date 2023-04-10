@@ -7,13 +7,17 @@ import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.demo_bot_minecraft.domain.Keyboards;
+import ru.demo_bot_minecraft.domain.database.PlayerAlias;
 import ru.demo_bot_minecraft.domain.dto.Description;
 import ru.demo_bot_minecraft.domain.dto.Extra;
 import ru.demo_bot_minecraft.domain.enums.BotMessageEnum;
 import ru.demo_bot_minecraft.domain.enums.BotState;
 import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
 import ru.demo_bot_minecraft.replies.Reply;
+import ru.demo_bot_minecraft.repository.PlayerAliasRepository;
 import ru.demo_bot_minecraft.service.MinecraftService;
+
+import java.util.stream.Collectors;
 
 import static ru.demo_bot_minecraft.util.ReplyUtils.messageEquals;
 
@@ -22,6 +26,7 @@ import static ru.demo_bot_minecraft.util.ReplyUtils.messageEquals;
 public class ServerInfoReply implements Reply<Message> {
 
     private final MinecraftService minecraftService;
+    private final PlayerAliasRepository playerAliasRepository;
     private final Keyboards keyboards;
 
     @Override
@@ -31,11 +36,14 @@ public class ServerInfoReply implements Reply<Message> {
 
     @Override
     public BotApiMethod<?> getReply(Message message) {
+        var userId = message.getFrom().getId();
+        var aliases = playerAliasRepository.findAllByUserId(userId).stream()
+                .collect(Collectors.toMap(p -> p.getPlayer().getName(), PlayerAlias::getAlias));
         return minecraftService.getMinecraftServerStats().getServerStats()
             .map(serverStats -> {
                 StringBuilder messageBuilder = new StringBuilder();
                 serverStats.getPlayersInfo().getPlayersOnline()
-                    .forEach(player -> messageBuilder.append(player.getName()).append("\n"));
+                    .forEach(player -> messageBuilder.append(aliases.getOrDefault(player.getName(), player.getName())).append("\n"));
                 var text = BotMessageEnum.SERVER_INFO.getMessage().formatted(getText(serverStats.getDescription()),
                     serverStats.getPlayersInfo().getOnline() + "/" + serverStats.getPlayersInfo().getMax(),
                     messageBuilder.toString());

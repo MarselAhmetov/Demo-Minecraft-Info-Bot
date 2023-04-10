@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +15,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import ru.demo_bot_minecraft.domain.database.PlayerAlias;
 import ru.demo_bot_minecraft.domain.database.ServerInfoDowntime;
 import ru.demo_bot_minecraft.domain.dto.ServerAction;
 import ru.demo_bot_minecraft.domain.database.Player;
@@ -23,6 +25,7 @@ import ru.demo_bot_minecraft.domain.database.Subscription;
 import ru.demo_bot_minecraft.domain.database.SubscriptionType;
 import ru.demo_bot_minecraft.event.SendMessageEvent;
 import ru.demo_bot_minecraft.mapper.ServerStatsMapper;
+import ru.demo_bot_minecraft.repository.PlayerAliasRepository;
 import ru.demo_bot_minecraft.repository.PlayerRepository;
 import ru.demo_bot_minecraft.repository.ServerEventRepository;
 import ru.demo_bot_minecraft.repository.ServerInfoDowntimeRepository;
@@ -45,6 +48,7 @@ public class MinecraftStatusJob {
     private final ServerStatsRepository serverStatsRepository;
     private final SubscriptionRepository subscriptionRepository;
     private final ServerInfoDowntimeRepository downtimeRepository;
+    private final PlayerAliasRepository playerAliasRepository;
 
     private final ServerStatsMapper serverStatsMapper;
 
@@ -174,13 +178,21 @@ public class MinecraftStatusJob {
 
     private void handleJoinPlayerEvent(Player player) {
         var subscriptions = subscriptionRepository.findAllByType(SubscriptionType.PLAYERS_JOIN);
-        String message = PLAYER_JOIN.getMessage().formatted(player.getName());
+
+        // collect to map by user id
+        var aliases = playerAliasRepository.findAllByPlayerName(player.getName()).stream()
+                .collect(Collectors.toMap(p -> p.getUser().getId(), PlayerAlias::getAlias));
+
         subscriptions.stream()
                 .map(Subscription::getTelegramUser)
                 .filter(user -> !player.getName().equals(user.getMinecraftName()))
                 .distinct()
-                .forEach(user -> applicationEventPublisher.publishEvent(new SendMessageEvent(this,
-                        message, user.getId().toString())));
+                .forEach(user -> applicationEventPublisher.publishEvent(
+                        new SendMessageEvent(
+                                this,
+                                PLAYER_JOIN.getMessage().formatted(aliases.getOrDefault(user.getId(), player.getName())),
+                                user.getId().toString())
+                ));
     }
 
     private void handleNewPlayerEvent(Player player) {

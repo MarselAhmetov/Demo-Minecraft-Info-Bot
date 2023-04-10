@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import ru.demo_bot_minecraft.domain.database.TelegramUser;
-import ru.demo_bot_minecraft.domain.database.SubscriptionType;
 import ru.demo_bot_minecraft.repository.SubscriptionRepository;
 
 import static ru.demo_bot_minecraft.domain.database.SubscriptionType.*;
@@ -87,7 +86,7 @@ public class Keyboards {
         } else {
             firstRow.add(REMOVE_NICKNAME.getMessage() + " " + user.getMinecraftName());
         }
-
+        firstRow.add(ALIASES.getMessage());
         firstRow.add(MAIN_MENU.getMessage());
 
         return buildKeyboard(List.of(firstRow));
@@ -111,4 +110,11 @@ public class Keyboards {
         return replyKeyboardMarkup;
     }
 
+    public ReplyKeyboardMarkup getAliasesKeyboard() {
+        KeyboardRow firstRow = new KeyboardRow();
+        firstRow.add(ADD_ALIAS.getMessage());
+        firstRow.add(REMOVE_ALIAS.getMessage());
+        firstRow.add(MAIN_MENU.getMessage());
+        return buildKeyboard(List.of(firstRow));
+    }
 }

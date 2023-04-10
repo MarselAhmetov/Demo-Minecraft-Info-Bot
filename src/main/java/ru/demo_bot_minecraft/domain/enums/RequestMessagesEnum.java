@@ -22,6 +22,9 @@ public enum RequestMessagesEnum {
     START("/start"),
     SETTINGS("Настройки"),
     ADD_NICKNAME("Добавить ник"),
+    ADD_ALIAS("Добавить алиас"),
+    REMOVE_ALIAS("Удалить алиас"),
+    ALIASES("Алиасы"),
     REMOVE_NICKNAME("Удалить ник");
     private final String message;
 
