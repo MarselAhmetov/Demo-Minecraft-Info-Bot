@@ -15,25 +15,23 @@ import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
 import ru.demo_bot_minecraft.replies.Reply;
 import ru.demo_bot_minecraft.service.MinecraftService;
 
+import static ru.demo_bot_minecraft.util.ReplyUtils.messageEquals;
+
 @Component
 @RequiredArgsConstructor
 public class ServerInfoReply implements Reply<Message> {
 
     private final MinecraftService minecraftService;
-    @Value("${minecraft.server.address}")
-    private String address;
-    @Value("${minecraft.server.port}")
-    private Integer port;
     private final Keyboards keyboards;
 
     @Override
     public boolean predicate(Message message) {
-        return message.getText().equals(RequestMessagesEnum.SERVER.getMessage());
+        return messageEquals(message, RequestMessagesEnum.SERVER);
     }
 
     @Override
     public BotApiMethod<?> getReply(Message message) {
-        return minecraftService.getMinecraftServerStats(address, port).getServerStats()
+        return minecraftService.getMinecraftServerStats().getServerStats()
             .map(serverStats -> {
                 StringBuilder messageBuilder = new StringBuilder();
                 serverStats.getPlayersInfo().getPlayersOnline()

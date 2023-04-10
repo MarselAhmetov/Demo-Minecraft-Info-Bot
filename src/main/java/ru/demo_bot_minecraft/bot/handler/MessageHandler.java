@@ -34,21 +34,16 @@ public class MessageHandler {
         if (inputText.equals(RequestMessagesEnum.START.getMessage())) {
             return getStartMessage(chatId);
         }
-        var userOptional = telegramUserRepository.findById(message.getFrom().getId());
-        TelegramUser user;
-        if (userOptional.isEmpty()) {
-            user = telegramUserRepository.save(TelegramUser.builder()
-                .id(message.getFrom().getId())
-                .isBot(message.getFrom().getIsBot())
-                .userName(message.getFrom().getUserName())
-                .lastName(message.getFrom().getLastName())
-                .firstName(message.getFrom().getFirstName())
-                .botState(BotState.DEFAULT)
-                .build());
-        } else {
-            user = userOptional.get();
-        }
-
+        var user = telegramUserRepository.findById(message.getFrom().getId())
+                .orElseGet(() -> telegramUserRepository.save(TelegramUser.builder()
+                        .id(message.getFrom().getId())
+                        .isBot(message.getFrom().getIsBot())
+                        .userName(message.getFrom().getUserName())
+                        .lastName(message.getFrom().getLastName())
+                        .firstName(message.getFrom().getFirstName())
+                        .botState(BotState.DEFAULT)
+                        .build())
+                );
         return stateDispatcher.dispatch(message, user.getBotState());
     }
 

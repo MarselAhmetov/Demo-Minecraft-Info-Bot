@@ -12,6 +12,8 @@ import ru.demo_bot_minecraft.domain.enums.BotState;
 import ru.demo_bot_minecraft.replies.Reply;
 import ru.demo_bot_minecraft.repository.TelegramUserRepository;
 
+import static ru.demo_bot_minecraft.util.ReplyUtils.anyText;
+
 @Component
 @RequiredArgsConstructor
 public class EnterNicknameReply implements Reply<Message> {
@@ -21,7 +23,7 @@ public class EnterNicknameReply implements Reply<Message> {
 
     @Override
     public boolean predicate(Message message) {
-        return message.getText() != null;
+        return anyText(message);
     }
 
     @Override
