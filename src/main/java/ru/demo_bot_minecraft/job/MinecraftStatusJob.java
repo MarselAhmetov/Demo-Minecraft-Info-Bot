@@ -177,12 +177,13 @@ public class MinecraftStatusJob {
     }
 
     private void handleJoinPlayerEvent(Player player) {
+        var playerLeft = serverEventRepository.existsByPlayerNameAndTimeAfterAndAction(player.getName(), currentCheckTime.minusMinutes(3), ServerAction.LEFT);
+        if (playerLeft) {
+            return;
+        }
         var subscriptions = subscriptionRepository.findAllByType(SubscriptionType.PLAYERS_JOIN);
-
-        // collect to map by user id
         var aliases = playerAliasRepository.findAllByPlayerName(player.getName()).stream()
                 .collect(Collectors.toMap(p -> p.getUser().getId(), PlayerAlias::getAlias));
-
         subscriptions.stream()
                 .map(Subscription::getTelegramUser)
                 .filter(user -> !player.getName().equals(user.getMinecraftName()))
