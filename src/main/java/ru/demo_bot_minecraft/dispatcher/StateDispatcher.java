@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -19,6 +20,7 @@ import ru.demo_bot_minecraft.domain.enums.BotState;
 import ru.demo_bot_minecraft.repository.TelegramUserRepository;
 
 @Component
+@RequiredArgsConstructor
 public class StateDispatcher {
 
     private final List<Reply<Message>> replies;
@@ -27,31 +29,19 @@ public class StateDispatcher {
     private final Keyboards keyboards;
     private final TelegramUserRepository userRepository;
 
-    public StateDispatcher(List<Reply<Message>> replies, Keyboards keyboards,
-        TelegramUserRepository userRepository) {
-        this.replies = replies;
-        this.keyboards = keyboards;
-        this.userRepository = userRepository;
-    }
-
     @PostConstruct
     public void post() {
         replies.forEach(reply -> {
             if (reply.availableInAnyState()) {
                 anyStateReplies.add(reply);
             }
-            stateReplies.putIfAbsent(reply.getState(), new ArrayList<>());
-            stateReplies.get(reply.getState()).add(reply);
+            stateReplies.computeIfAbsent(reply.getState(), k -> new ArrayList<>()).add(reply);
         });
     }
 
     public BotApiMethod<?> dispatch(Message message, BotState state) {
-        Optional<BotApiMethod<?>> optionalBotApiMethod = handleState(message, state);
-        if (optionalBotApiMethod.isEmpty()) {
-            return handleOther(message).orElse(new SendMessage(message.getChatId().toString(), "Неожиданная ошибка :("));
-        } else {
-            return optionalBotApiMethod.get();
-        }
+        return handleState(message, state)
+                .orElseGet(() -> handleOther(message));
     }
 
     private SendMessage getSendMessage(Message message) {
@@ -60,25 +50,22 @@ public class StateDispatcher {
         return sendMessage;
     }
 
-    private Optional<BotApiMethod<?>> handleOther(Message message) {
-        var response = anyStateReplies.stream()
-            .filter(reply -> reply.predicate(message))
-            .findFirst()
-            .map(reply -> reply.getReply(message));
-        if (response.isEmpty()) {
-            var sendMessage = getSendMessage(message);
-            sendMessage.setText(BotMessageEnum.USE_THE_KEYBOARD.getMessage());
-            var user = userRepository.getById(message.getFrom().getId());
-            sendMessage.setReplyMarkup(keyboards.getByState(user));
-            return Optional.of(sendMessage);
-        } else {
-            return Optional.of(response.get());
-        }
+    private BotApiMethod<?> handleOther(Message message) {
+        return anyStateReplies.stream()
+                .filter(reply -> reply.predicate(message))
+                .findFirst()
+                .map(reply -> reply.getReply(message))
+                .orElseGet(() -> {
+                    var sendMessage = getSendMessage(message);
+                    sendMessage.setText(BotMessageEnum.USE_THE_KEYBOARD.getMessage());
+                    var user = userRepository.getById(message.getFrom().getId());
+                    sendMessage.setReplyMarkup(keyboards.getByState(user));
+                    return ((BotApiMethod) sendMessage);
+                });
     }
 
     private Optional<BotApiMethod<?>> handleState(Message message, BotState state) {
-        return stateReplies.get(state)
-            .stream()
+        return stateReplies.get(state).stream()
             .filter(reply -> reply.predicate(message))
             .findFirst()
             .map(reply -> reply.getReply(message));

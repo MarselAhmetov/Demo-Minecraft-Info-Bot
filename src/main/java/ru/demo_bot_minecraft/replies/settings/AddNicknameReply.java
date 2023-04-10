@@ -12,6 +12,8 @@ import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
 import ru.demo_bot_minecraft.replies.Reply;
 import ru.demo_bot_minecraft.repository.TelegramUserRepository;
 
+import static ru.demo_bot_minecraft.util.ReplyUtils.messageEquals;
+
 @Component
 @RequiredArgsConstructor
 public class AddNicknameReply implements Reply<Message> {
@@ -21,7 +23,7 @@ public class AddNicknameReply implements Reply<Message> {
 
     @Override
     public boolean predicate(Message message) {
-        return message.getText().equals(RequestMessagesEnum.ADD_NICKNAME.getMessage());
+        return messageEquals(message, RequestMessagesEnum.ADD_NICKNAME);
     }
 
     @Override

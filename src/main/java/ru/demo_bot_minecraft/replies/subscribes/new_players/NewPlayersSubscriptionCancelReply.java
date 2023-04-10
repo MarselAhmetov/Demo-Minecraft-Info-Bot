@@ -14,6 +14,8 @@ import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
 import ru.demo_bot_minecraft.replies.Reply;
 import ru.demo_bot_minecraft.repository.SubscriptionRepository;
 
+import static ru.demo_bot_minecraft.util.ReplyUtils.messageEquals;
+
 @Component
 @RequiredArgsConstructor
 public class NewPlayersSubscriptionCancelReply implements Reply<Message> {
@@ -23,7 +25,7 @@ public class NewPlayersSubscriptionCancelReply implements Reply<Message> {
 
     @Override
     public boolean predicate(Message message) {
-        return message.getText().equals(RequestMessagesEnum.CANCEL_NEW_PLAYERS_SUBSCRIPTION.getMessage());
+        return messageEquals(message, RequestMessagesEnum.CANCEL_NEW_PLAYERS_SUBSCRIPTION);
     }
 
     @Override

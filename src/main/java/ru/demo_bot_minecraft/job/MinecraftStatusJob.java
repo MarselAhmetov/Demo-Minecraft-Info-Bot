@@ -1,16 +1,15 @@
 package ru.demo_bot_minecraft.job;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -30,6 +29,10 @@ import ru.demo_bot_minecraft.repository.ServerInfoDowntimeRepository;
 import ru.demo_bot_minecraft.repository.ServerStatsRepository;
 import ru.demo_bot_minecraft.repository.SubscriptionRepository;
 import ru.demo_bot_minecraft.service.MinecraftService;
+import ru.demo_bot_minecraft.util.DateUtils;
+
+import static ru.demo_bot_minecraft.domain.enums.BotMessageEnum.NEW_PLAYER_JOIN;
+import static ru.demo_bot_minecraft.domain.enums.BotMessageEnum.PLAYER_JOIN;
 
 @Component
 @RequiredArgsConstructor
@@ -47,35 +50,25 @@ public class MinecraftStatusJob {
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    @Value("${minecraft.server.address}")
-    private String address;
-    @Value("${minecraft.server.port}")
-    private Integer port;
-
     private LocalDateTime currentCheckTime;
 
     @Scheduled(fixedDelay = 5000)
     @Transactional
     public void updateMinecraftInfo() {
-        ServerStats lastCheckData = serverStatsRepository.getServerStats().orElse(null);
-        currentCheckTime = LocalDateTime.now(ZoneId.of("Europe/Moscow"));
-        var currentServerDataResponse = minecraftService.getMinecraftServerStats(address, port);
-        if (currentServerDataResponse.getServerStats().isEmpty()) {
-            if (currentServerDataResponse.getError() != null) {
-                var currentDowntimeOptional = getCurrentDowntime();
-                ServerInfoDowntime downtime;
-                if (currentDowntimeOptional.isEmpty()) {
-                    downtime = createDowntime(currentServerDataResponse.getError());
-                } else {
-                    downtime = currentDowntimeOptional.get();
-                }
-                log.info("Server downtime in seconds: " + ChronoUnit.SECONDS.between(downtime.getDowntime(), LocalDateTime.now(ZoneId.of("Europe/Moscow"))));
+        currentCheckTime = DateUtils.now();
+        log.info("Check server info: " + currentCheckTime.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")));
+        var lastCheckData = serverStatsRepository.getServerStats().orElse(null);
+        var currentServerStats = minecraftService.getMinecraftServerStats();
+        if (currentServerStats.getServerStats().isEmpty()) {
+            if (currentServerStats.getError() != null) {
+                ServerInfoDowntime downtime = getCurrentDowntime()
+                        .orElseGet(() -> createDowntime(currentServerStats.getError()));
+                log.info("Server downtime in seconds: " + ChronoUnit.SECONDS.between(downtime.getDowntime(), DateUtils.now()));
             }
         }
-
-        currentServerDataResponse.getServerStats().ifPresent(currentServerData -> {
+        currentServerStats.getServerStats().ifPresent(currentServerData -> {
             setUptimeToCurrentDowntime();
-            var newEvents = checkEvent(currentServerData, lastCheckData);
+            checkEvent(currentServerData, lastCheckData);
             var serverStats = serverStatsMapper.toEntity(currentServerData);
             playerRepository.saveAll(serverStats.getPlayersOnline());
             serverStatsRepository.updateData(serverStats);
@@ -84,9 +77,9 @@ public class MinecraftStatusJob {
 
     private ServerInfoDowntime createDowntime(String error) {
         var downtime = ServerInfoDowntime.builder()
-            .downtime(LocalDateTime.now(ZoneId.of("Europe/Moscow")))
-            .error(error)
-            .build();
+                .downtime(DateUtils.now())
+                .error(error)
+                .build();
         downtime = downtimeRepository.save(downtime);
         sendDowntimeReport(downtime);
         return downtime;
@@ -98,7 +91,7 @@ public class MinecraftStatusJob {
 
     private Optional<ServerInfoDowntime> setUptimeToCurrentDowntime() {
         return getCurrentDowntime().map(downtime -> {
-            downtime.setUptime(LocalDateTime.now(ZoneId.of("Europe/Moscow")));
+            downtime.setUptime(DateUtils.now());
             downtime = downtimeRepository.save(downtime);
             sendUptimeReport(downtime);
             return downtime;
@@ -108,29 +101,26 @@ public class MinecraftStatusJob {
     private void sendDowntimeReport(ServerInfoDowntime downtime) {
         var subscriptions = subscriptionRepository.findAllByType(SubscriptionType.DOWNTIME);
         String messageBuilder = "Сервер упал в " + downtime.getDowntime().format(
-            DateTimeFormatter.ofPattern("dd.MM HH:mm"));
+                DateTimeFormatter.ofPattern("dd.MM HH:mm"));
         subscriptions.stream()
-            .map(Subscription::getTelegramUser)
-            .distinct()
-            .forEach(user -> applicationEventPublisher.publishEvent(new SendMessageEvent(this,
-                messageBuilder, user.getId().toString())));
+                .map(Subscription::getTelegramUser)
+                .distinct()
+                .forEach(user -> applicationEventPublisher.publishEvent(new SendMessageEvent(this,
+                        messageBuilder, user.getId().toString())));
     }
 
     private void sendUptimeReport(ServerInfoDowntime downtime) {
         var subscriptions = subscriptionRepository.findAllByType(SubscriptionType.DOWNTIME);
         String messageBuilder = "Сервер встал в " + downtime.getUptime().format(
-            DateTimeFormatter.ofPattern("dd.MM HH:mm"));
+                DateTimeFormatter.ofPattern("dd.MM HH:mm"));
         subscriptions.stream()
-            .map(Subscription::getTelegramUser)
-            .distinct()
-            .forEach(user -> applicationEventPublisher.publishEvent(new SendMessageEvent(this,
-                messageBuilder, user.getId().toString())));
+                .map(Subscription::getTelegramUser)
+                .distinct()
+                .forEach(user -> applicationEventPublisher.publishEvent(new SendMessageEvent(this,
+                        messageBuilder, user.getId().toString())));
     }
 
-    private List<ServerEvent> checkEvent(
-        ru.demo_bot_minecraft.domain.dto.ServerStats currentServerData, ServerStats lastCheckData) {
-        List<ServerEvent> events = new ArrayList<>();
-
+    private void checkEvent(ru.demo_bot_minecraft.domain.dto.ServerStats currentServerData, ServerStats lastCheckData) {
         if (lastCheckData != null && !isDataEquals(currentServerData, lastCheckData)) {
             var currentOnline = currentServerData.getPlayersInfo().getPlayersOnline();
             var lastCheckOnline = lastCheckData.getPlayersOnline();
@@ -140,57 +130,69 @@ public class MinecraftStatusJob {
             if (lastCheckOnline == null) {
                 lastCheckOnline = new ArrayList<>();
             }
+            checkJoinLeftEvents(currentOnline, lastCheckOnline);
+        }
+    }
 
-            if (!currentOnline.equals(lastCheckOnline)) {
+    private void checkJoinLeftEvents(List<Player> currentOnline, List<Player> lastCheckOnline) {
+        if (!currentOnline.equals(lastCheckOnline)) {
+            var joined = new ArrayList<>(currentOnline);
+            var left = new ArrayList<>(lastCheckOnline);
+            joined.removeAll(lastCheckOnline);
+            left.removeAll(currentOnline);
 
-                var joined = new ArrayList<>(currentOnline);
-                var left = new ArrayList<>(lastCheckOnline);
-                joined.removeAll(lastCheckOnline);
-                left.removeAll(currentOnline);
-
-                if (!joined.isEmpty()) {
-                        joined.forEach(player -> {
-                            boolean isPlayerNew = !playerRepository.existsById(player.getId());
-                            if (isPlayerNew) {
-                                var subscriptions = subscriptionRepository.findAllByType(SubscriptionType.NEW_PLAYERS);
-                                String messageBuilder = "НОВЫЙ игрок : "
-                                    + player.getName()
-                                    + " зашел на сервер";
-                                subscriptions.stream()
-                                    .map(Subscription::getTelegramUser)
-                                    .filter(user -> !player.getName().equals(user.getMinecraftName()))
-                                    .distinct()
-                                    .forEach(user -> applicationEventPublisher.publishEvent(new SendMessageEvent(this,
-                                        messageBuilder, user.getId().toString())));
-                            } else {
-                                var subscriptions = subscriptionRepository.findAllByType(SubscriptionType.PLAYERS_JOIN);
-                                String messageBuilder = player.getName()
-                                    + " зашел на сервер";
-                                subscriptions.stream()
-                                    .map(Subscription::getTelegramUser)
-                                    .filter(user -> !player.getName().equals(user.getMinecraftName()))
-                                    .distinct()
-                                    .forEach(user -> applicationEventPublisher.publishEvent(new SendMessageEvent(this,
-                                        messageBuilder, user.getId().toString())));
-                            }
-                            serverEventRepository.save(ServerEvent.builder()
-                                .player(getOrSavePlayer(player))
-                                .action(ServerAction.JOIN)
-                                .time(this.currentCheckTime)
-                                .build());
-                        });
+            // TODO save batch
+            joined.forEach(player -> {
+                boolean isPlayerNew = !playerRepository.existsById(player.getId());
+                if (isPlayerNew) {
+                    handleNewPlayerEvent(player);
+                } else {
+                    handleJoinPlayerEvent(player);
                 }
-                if (!left.isEmpty()) {
-                    left.forEach(player -> serverEventRepository.save(ServerEvent.builder()
-                        .player(getOrSavePlayer(player))
-                        .action(ServerAction.LEFT)
-                        .time(this.currentCheckTime)
-                        .build()));
-                }
-                return events;
+                saveJoinEvent(player);
+            });
+            if (!left.isEmpty()) {
+                left.forEach(this::saveLeftEvent);
             }
         }
-        return null;
+    }
+
+    private void saveJoinEvent(Player player) {
+        serverEventRepository.save(ServerEvent.builder()
+                .player(getOrSavePlayer(player))
+                .action(ServerAction.JOIN)
+                .time(this.currentCheckTime)
+                .build());
+    }
+
+    private void saveLeftEvent(Player player) {
+        serverEventRepository.save(ServerEvent.builder()
+                .player(getOrSavePlayer(player))
+                .action(ServerAction.LEFT)
+                .time(this.currentCheckTime)
+                .build());
+    }
+
+    private void handleJoinPlayerEvent(Player player) {
+        var subscriptions = subscriptionRepository.findAllByType(SubscriptionType.PLAYERS_JOIN);
+        String message = PLAYER_JOIN.getMessage().formatted(player.getName());
+        subscriptions.stream()
+                .map(Subscription::getTelegramUser)
+                .filter(user -> !player.getName().equals(user.getMinecraftName()))
+                .distinct()
+                .forEach(user -> applicationEventPublisher.publishEvent(new SendMessageEvent(this,
+                        message, user.getId().toString())));
+    }
+
+    private void handleNewPlayerEvent(Player player) {
+        var subscriptions = subscriptionRepository.findAllByType(SubscriptionType.NEW_PLAYERS);
+        String messageBuilder = NEW_PLAYER_JOIN.getMessage().formatted(player.getName());
+        subscriptions.stream()
+                .map(Subscription::getTelegramUser)
+                .filter(user -> !player.getName().equals(user.getMinecraftName()))
+                .distinct()
+                .forEach(user -> applicationEventPublisher.publishEvent(new SendMessageEvent(this,
+                        messageBuilder, user.getId().toString())));
     }
 
     private Player getOrSavePlayer(Player player) {
@@ -202,11 +204,11 @@ public class MinecraftStatusJob {
 
     private boolean isDataEquals(ru.demo_bot_minecraft.domain.dto.ServerStats currentServerData, ServerStats lastCheckData) {
         return lastCheckData.getName().equals(currentServerData.getVersion().getName()) &&
-            lastCheckData.getMaxPlayers() == currentServerData.getPlayersInfo().getMax() &&
-            lastCheckData.getOnlinePlayers() == currentServerData.getPlayersInfo().getOnline() &&
-            lastCheckData.getProtocol().equals(currentServerData.getVersion().getProtocol()) &&
-            lastCheckData.getText().equals(currentServerData.getDescription().getText()) &&
-            lastCheckData.getPlayersOnline().size() == currentServerData.getPlayersInfo().getPlayersOnline().size() &&
-            new HashSet<>(lastCheckData.getPlayersOnline()).containsAll(currentServerData.getPlayersInfo().getPlayersOnline());
+                lastCheckData.getMaxPlayers() == currentServerData.getPlayersInfo().getMax() &&
+                lastCheckData.getOnlinePlayers() == currentServerData.getPlayersInfo().getOnline() &&
+                lastCheckData.getProtocol().equals(currentServerData.getVersion().getProtocol()) &&
+                lastCheckData.getText().equals(currentServerData.getDescription().getText()) &&
+                lastCheckData.getPlayersOnline().size() == currentServerData.getPlayersInfo().getPlayersOnline().size() &&
+                new HashSet<>(lastCheckData.getPlayersOnline()).containsAll(currentServerData.getPlayersInfo().getPlayersOnline());
     }
 }

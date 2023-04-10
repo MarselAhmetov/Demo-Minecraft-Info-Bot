@@ -4,7 +4,6 @@ import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
@@ -31,6 +30,7 @@ import ru.demo_bot_minecraft.domain.enums.BotState;
 import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
 import ru.demo_bot_minecraft.replies.Reply;
 import ru.demo_bot_minecraft.repository.ServerEventRepository;
+import ru.demo_bot_minecraft.util.DateUtils;
 
 @Component
 @RequiredArgsConstructor
@@ -58,7 +58,6 @@ public class StatisticReply implements Reply<Message> {
         var serverEvents = findServerEvents(message.getText());
         var playHistories = getStatisticData(serverEvents);
         playHistories.sort((o1, o2) -> o2.getPlayTimeSeconds().compareTo(o1.getPlayTimeSeconds()));
-        SendMessage sendMessage;
         StringBuilder messageBuilder = new StringBuilder();
         messageBuilder.append(BotMessageEnum.PLAY_TIME_DATA.getMessage());
         playHistories.forEach(playHistory -> messageBuilder.append(playHistory.getPlayerName()).append(" ")
@@ -66,6 +65,7 @@ public class StatisticReply implements Reply<Message> {
             .append((playHistory.getPlayTimeSeconds() % SECONDS_IN_HOUR) / SECONDS_IN_MINUTES).append(":")
             .append(playHistory.getPlayTimeSeconds() % SECONDS_IN_MINUTES)
             .append("\n"));
+        SendMessage sendMessage;
         sendMessage = new SendMessage(message.getChatId().toString(), messageBuilder.toString());
         sendMessage.setReplyMarkup(keyboards.getPlayTimeKeyboard());
         return sendMessage;
@@ -84,26 +84,26 @@ public class StatisticReply implements Reply<Message> {
     private List<ServerEvent> findServerEvents(String text) {
         if (text.equalsIgnoreCase(RequestMessagesEnum.TODAY.getMessage())) {
             return serverEventRepository.findAllByTimeBetweenOrderByTimeAsc(
-                LocalDate.now(ZoneId.of("Europe/Moscow")).atStartOfDay(),
-                LocalDateTime.now(ZoneId.of("Europe/Moscow"))
+                DateUtils.today().atStartOfDay(),
+                    DateUtils.now()
             );
         }
         if (text.equalsIgnoreCase(RequestMessagesEnum.YESTERDAY.getMessage())) {
             return serverEventRepository.findAllByTimeBetweenOrderByTimeAsc(
-                LocalDate.now(ZoneId.of("Europe/Moscow")).minusDays(1).atStartOfDay(),
-                LocalDate.now(ZoneId.of("Europe/Moscow")).atStartOfDay()
+                    DateUtils.today().minusDays(1).atStartOfDay(),
+                    DateUtils.today().atStartOfDay()
             );
         }
         if (text.equalsIgnoreCase(RequestMessagesEnum.WEEK.getMessage())) {
             return serverEventRepository.findAllByTimeBetweenOrderByTimeAsc(
-                LocalDate.now(ZoneId.of("Europe/Moscow")).with(DayOfWeek.MONDAY).atStartOfDay(),
-                LocalDateTime.now(ZoneId.of("Europe/Moscow"))
+                    DateUtils.today().with(DayOfWeek.MONDAY).atStartOfDay(),
+                    DateUtils.now()
             );
         }
         if (text.equalsIgnoreCase(RequestMessagesEnum.MONTH.getMessage())) {
             return serverEventRepository.findAllByTimeBetweenOrderByTimeAsc(
-                LocalDate.now(ZoneId.of("Europe/Moscow")).with(TemporalAdjusters.firstDayOfMonth()).atStartOfDay(),
-                LocalDateTime.now(ZoneId.of("Europe/Moscow"))
+                    DateUtils.today().with(TemporalAdjusters.firstDayOfMonth()).atStartOfDay(),
+                    DateUtils.now()
             );
         }
         if (text.equalsIgnoreCase(RequestMessagesEnum.ALL_TIME.getMessage())) {
@@ -206,14 +206,14 @@ public class StatisticReply implements Reply<Message> {
             var joinTime = entry.getValue();
             var leftTime = leftTimes.get(entry.getKey());
             if (joinTime != null && (leftTime == null || joinTime.isAfter(leftTime))) {
-                var today = LocalDate.now(ZoneId.of("Europe/Moscow")).atStartOfDay();
+                var today = DateUtils.today().atStartOfDay();
                 if (joinTime.isBefore(today)) {
                     Duration duration = Duration.between(joinTime,
                         joinTime.toLocalDate().plusDays(1).atStartOfDay());
                     result.get(entry.getKey()).addPlayTimeSeconds(duration.getSeconds());
                 } else {
                     Duration duration = Duration.between(joinTime,
-                        LocalDateTime.now(ZoneId.of("Europe/Moscow")));
+                            DateUtils.now());
                     result.get(entry.getKey()).addPlayTimeSeconds(duration.getSeconds());
                 }
             }

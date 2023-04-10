@@ -13,6 +13,8 @@ import ru.demo_bot_minecraft.replies.Reply;
 import ru.demo_bot_minecraft.repository.SubscriptionRepository;
 import ru.demo_bot_minecraft.repository.TelegramUserRepository;
 
+import static ru.demo_bot_minecraft.util.ReplyUtils.messageEquals;
+
 @Component
 @RequiredArgsConstructor
 public class SubscriptionsReply implements Reply<Message> {
@@ -24,7 +26,7 @@ public class SubscriptionsReply implements Reply<Message> {
 
     @Override
     public boolean predicate(Message message) {
-        return message.getText().equals(RequestMessagesEnum.SUBSCRIPTION.getMessage());
+        return messageEquals(message, RequestMessagesEnum.SUBSCRIPTION);
     }
 
     @Override

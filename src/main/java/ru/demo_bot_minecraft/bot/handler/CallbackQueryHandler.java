@@ -9,6 +9,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 
 import org.telegram.telegrambots.meta.api.objects.Update;
+import ru.demo_bot_minecraft.domain.enums.BotMessageEnum;
 
 @Component
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
@@ -23,7 +24,7 @@ public class CallbackQueryHandler {
     }
 
     private SendMessage handleDefault(String chatId, String data) {
-        return new SendMessage(chatId, "Я получил ваше сообщение:  " + data + ", но пока не знаю как его обрабатывать");
+        return new SendMessage(chatId, BotMessageEnum.UNKNOWN_COMMAND.getMessage().formatted(data));
     }
 
 }

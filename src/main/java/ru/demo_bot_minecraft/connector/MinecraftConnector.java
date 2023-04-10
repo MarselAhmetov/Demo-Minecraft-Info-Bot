@@ -52,7 +52,7 @@ public class MinecraftConnector {
             int packetID = BinaryUtils.getIntData(inputStream);           // packet ID
             int jsonLength = BinaryUtils.getIntData(inputStream);         // JSON response size
             byte[] rawData = new byte[jsonLength];    // storage for JSON data
-            inputStream.read(rawData);                // fill byte array with JSON data
+            inputStream.readFully(rawData);                // fill byte array with JSON data
 
             String json = new String(rawData, StandardCharsets.UTF_8);
             int faviconIndex = json.lastIndexOf(",\"favicon\"");

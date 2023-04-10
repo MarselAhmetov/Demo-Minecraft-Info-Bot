@@ -15,6 +15,8 @@ import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
 import ru.demo_bot_minecraft.replies.Reply;
 import ru.demo_bot_minecraft.repository.SubscriptionRepository;
 
+import static ru.demo_bot_minecraft.util.ReplyUtils.messageEquals;
+
 @Component
 @RequiredArgsConstructor
 public class PlayersJoinSubscriptionReply implements Reply<Message> {
@@ -24,7 +26,7 @@ public class PlayersJoinSubscriptionReply implements Reply<Message> {
 
     @Override
     public boolean predicate(Message message) {
-        return message.getText().equalsIgnoreCase(RequestMessagesEnum.PLAYERS_JOIN_SUBSCRIPTION.getMessage());
+        return messageEquals(message, RequestMessagesEnum.PLAYERS_JOIN_SUBSCRIPTION);
     }
 
     public BotApiMethod<?> getReply(Message message) {

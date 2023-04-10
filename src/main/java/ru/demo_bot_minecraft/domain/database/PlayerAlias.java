@@ -1,32 +1,33 @@
 package ru.demo_bot_minecraft.domain.database;
 
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.SuperBuilder;
-
-import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@SuperBuilder
+@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@EqualsAndHashCode
+@ToString
 @Entity
-@EqualsAndHashCode(callSuper = true)
-public class ServerStats extends LongIdBaseEntity {
-
-    String text;
-    int maxPlayers;
-    int onlinePlayers;
-    @ManyToMany(fetch = FetchType.EAGER)
-    List<Player> playersOnline;
-    String name;
-    String protocol;
+public class PlayerAlias {
+    @Id
+    String id;
+    @ManyToOne(fetch = FetchType.LAZY)
+    Player player;
+    String alias;
+    @ManyToOne(fetch = FetchType.LAZY)
+    TelegramUser user;
 }

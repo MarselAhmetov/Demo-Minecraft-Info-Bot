@@ -15,6 +15,9 @@ import ru.demo_bot_minecraft.domain.enums.BotState;
 import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
 import ru.demo_bot_minecraft.replies.Reply;
 import ru.demo_bot_minecraft.repository.ServerEventRepository;
+import ru.demo_bot_minecraft.util.DateUtils;
+
+import static ru.demo_bot_minecraft.util.ReplyUtils.messageEquals;
 
 @Component
 @RequiredArgsConstructor
@@ -25,7 +28,7 @@ public class ServerLogsReply implements Reply<Message> {
 
     @Override
     public boolean predicate(Message message) {
-        return message.getText().equals(RequestMessagesEnum.LOGS.getMessage());
+        return messageEquals(message, RequestMessagesEnum.LOGS);
     }
 
     @Override
@@ -33,8 +36,7 @@ public class ServerLogsReply implements Reply<Message> {
         SendMessage sendMessage;
         StringBuilder messageBuilder = new StringBuilder();
         messageBuilder.append(BotMessageEnum.LOGS.getMessage());
-        serverEventRepository.findAllByTimeBetweenOrderByTimeAsc(LocalDate.now(ZoneId.of("Europe/Moscow")).atStartOfDay(), LocalDateTime.now(
-                ZoneId.of("Europe/Moscow")))
+        serverEventRepository.findAllByTimeBetweenOrderByTimeAsc(DateUtils.today().atStartOfDay(), DateUtils.now())
             .forEach(event -> messageBuilder.append(event.getTime().format(
                     DateTimeFormatter.ofPattern("dd.MM HH:mm"))).append(" ")
                 .append(event.getPlayer().getName()).append(" ").append(event.getAction())

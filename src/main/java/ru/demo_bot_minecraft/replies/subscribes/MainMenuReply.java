@@ -13,6 +13,8 @@ import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
 import ru.demo_bot_minecraft.replies.Reply;
 import ru.demo_bot_minecraft.repository.TelegramUserRepository;
 
+import static ru.demo_bot_minecraft.util.ReplyUtils.messageEquals;
+
 @Component
 @RequiredArgsConstructor
 public class MainMenuReply implements Reply<Message> {
@@ -22,7 +24,7 @@ public class MainMenuReply implements Reply<Message> {
 
     @Override
     public boolean predicate(Message message) {
-        return message.getText().equalsIgnoreCase(RequestMessagesEnum.MAIN_MENU.getMessage());
+        return messageEquals(message, RequestMessagesEnum.MAIN_MENU);
     }
 
     @Override
