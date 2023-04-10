@@ -56,7 +56,6 @@ public class MinecraftStatusJob {
     @Transactional
     public void updateMinecraftInfo() {
         currentCheckTime = DateUtils.now();
-        log.info("Check server info: " + currentCheckTime.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")));
         var lastCheckData = serverStatsRepository.getServerStats().orElse(null);
         var currentServerStats = minecraftService.getMinecraftServerStats();
         if (currentServerStats.getServerStats().isEmpty()) {

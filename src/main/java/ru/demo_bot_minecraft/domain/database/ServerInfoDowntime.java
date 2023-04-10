@@ -1,6 +1,6 @@
 package ru.demo_bot_minecraft.domain.database;
 
-import jakarta.persistence.Entity;
+import javax.persistence.Entity;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;

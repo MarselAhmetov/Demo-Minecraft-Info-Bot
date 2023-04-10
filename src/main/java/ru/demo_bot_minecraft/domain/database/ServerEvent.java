@@ -1,10 +1,5 @@
 package ru.demo_bot_minecraft.domain.database;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,6 +9,11 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 import ru.demo_bot_minecraft.domain.dto.ServerAction;
 
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.OneToOne;
 import java.time.LocalDateTime;
 
 @Data
