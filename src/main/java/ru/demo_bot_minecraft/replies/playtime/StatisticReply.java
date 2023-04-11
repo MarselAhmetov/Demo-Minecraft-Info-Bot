@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.validator.GenericValidator;
 import org.springframework.data.domain.Sort;
@@ -22,6 +24,7 @@ import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.demo_bot_minecraft.domain.Keyboards;
+import ru.demo_bot_minecraft.domain.database.PlayerAlias;
 import ru.demo_bot_minecraft.domain.database.ServerEvent;
 import ru.demo_bot_minecraft.domain.dto.PlayHistory;
 import ru.demo_bot_minecraft.domain.dto.ServerAction;
@@ -29,6 +32,7 @@ import ru.demo_bot_minecraft.domain.enums.BotMessageEnum;
 import ru.demo_bot_minecraft.domain.enums.BotState;
 import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
 import ru.demo_bot_minecraft.replies.Reply;
+import ru.demo_bot_minecraft.repository.PlayerAliasRepository;
 import ru.demo_bot_minecraft.repository.ServerEventRepository;
 import ru.demo_bot_minecraft.util.DateUtils;
 
@@ -38,6 +42,7 @@ public class StatisticReply implements Reply<Message> {
 
     private final Keyboards keyboards;
     private final ServerEventRepository serverEventRepository;
+    private final PlayerAliasRepository playerAliasRepository;
 
     public static final Integer SECONDS_IN_HOUR = 3600;
     public static final Integer SECONDS_IN_MINUTES = 60;
@@ -55,12 +60,15 @@ public class StatisticReply implements Reply<Message> {
     @Override
     @Transactional
     public BotApiMethod<?> getReply(Message message) {
+        var userId = message.getFrom().getId();
+        var aliases = playerAliasRepository.findAllByUserId(userId).stream()
+                .collect(Collectors.toMap(p -> p.getPlayer().getName(), PlayerAlias::getAlias));
         var serverEvents = findServerEvents(message.getText());
         var playHistories = getStatisticData(serverEvents);
         playHistories.sort((o1, o2) -> o2.getPlayTimeSeconds().compareTo(o1.getPlayTimeSeconds()));
         StringBuilder messageBuilder = new StringBuilder();
         messageBuilder.append(BotMessageEnum.PLAY_TIME_DATA.getMessage());
-        playHistories.forEach(playHistory -> messageBuilder.append(playHistory.getPlayerName()).append(" ")
+        playHistories.forEach(playHistory -> messageBuilder.append(aliases.getOrDefault(playHistory.getPlayerName(), playHistory.getPlayerName())).append(" ")
             .append(playHistory.getPlayTimeSeconds() / SECONDS_IN_HOUR).append(":")
             .append((playHistory.getPlayTimeSeconds() % SECONDS_IN_HOUR) / SECONDS_IN_MINUTES).append(":")
             .append(playHistory.getPlayTimeSeconds() % SECONDS_IN_MINUTES)
