@@ -1,7 +1,6 @@
 package ru.demo_bot_minecraft.replies.home;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -62,15 +61,19 @@ public class ServerInfoReply implements Reply<Message> {
 
     private String getText(Description description) {
         if (description.getText() != null && !description.getText().isEmpty()) {
-            return description.getText();
+            return removeSpecialSymbols(description.getText());
         } else if (description.getExtra() != null && !description.getExtra().isEmpty()) {
             StringBuilder stringBuilder = new StringBuilder();
             description.getExtra().stream().map(Extra::getText)
                 .forEach(stringBuilder::append);
-            return stringBuilder.toString();
+            return removeSpecialSymbols(stringBuilder.toString());
         } else {
             return "Сервер";
         }
+    }
+
+    public static String removeSpecialSymbols(String text) {
+        return text.replaceAll("§.", "");
     }
 
     @Override
