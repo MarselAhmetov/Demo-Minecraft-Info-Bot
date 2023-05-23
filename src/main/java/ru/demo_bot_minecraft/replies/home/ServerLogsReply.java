@@ -1,6 +1,7 @@
 package ru.demo_bot_minecraft.replies.home;
 
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.demo_bot_minecraft.domain.Keyboards;
 import ru.demo_bot_minecraft.domain.database.PlayerAlias;
+import ru.demo_bot_minecraft.domain.database.ServerEvent;
 import ru.demo_bot_minecraft.domain.enums.BotMessageEnum;
 import ru.demo_bot_minecraft.domain.enums.BotState;
 import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
@@ -38,17 +40,25 @@ public class ServerLogsReply implements Reply<Message> {
         var userId = message.getFrom().getId();
         var aliases = playerAliasRepository.findAllByUserId(userId).stream()
                 .collect(Collectors.toMap(p -> p.getPlayer().getName(), PlayerAlias::getAlias));
-        SendMessage sendMessage;
+        var text = getText(aliases);
+       return SendMessage.builder()
+                .chatId(message.getChatId().toString())
+                .text(text)
+                .replyMarkup(keyboards.getDefaultKeyboard())
+                .build();
+    }
+
+    public String getText(Map<String, String> aliases) {
         StringBuilder messageBuilder = new StringBuilder();
         messageBuilder.append(BotMessageEnum.LOGS.getMessage());
-        serverEventRepository.findAllByTimeBetweenOrderByTimeAsc(DateUtils.today().atStartOfDay(), DateUtils.now())
-            .forEach(event -> messageBuilder.append(event.getTime().format(
-                    DateTimeFormatter.ofPattern("dd.MM HH:mm"))).append(" ")
-                .append(aliases.getOrDefault(event.getPlayer().getName(), event.getPlayer().getName())).append(" ").append(event.getAction())
-                .append("\n"));
-        sendMessage = new SendMessage(message.getChatId().toString(), messageBuilder.toString());
-        sendMessage.setReplyMarkup(keyboards.getDefaultKeyboard());
-        return sendMessage;
+        var events = serverEventRepository.findAllByTimeBetweenOrderByTimeAsc(DateUtils.nowMinusHours(24L), DateUtils.now());
+        for (ServerEvent event : events) {
+            messageBuilder.append(event.getTime().format(DateTimeFormatter.ofPattern("dd.MM HH:mm"))).append(" ")
+                    .append(aliases.getOrDefault(event.getPlayer().getName(), event.getPlayer().getName())).append(" ")
+                    .append(event.getAction())
+                    .append("\n");
+        }
+        return messageBuilder.toString();
     }
 
     @Override

@@ -16,4 +16,8 @@ public class DateUtils {
     public static LocalDate today() {
         return LocalDate.now(TIME_ZONE);
     }
+
+    public static LocalDateTime nowMinusHours(Long hours) {
+        return LocalDateTime.now(TIME_ZONE).minusHours(hours);
+    }
 }
