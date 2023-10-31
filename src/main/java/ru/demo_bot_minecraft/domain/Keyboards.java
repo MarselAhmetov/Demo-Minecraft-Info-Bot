@@ -57,6 +57,11 @@ public class Keyboards {
         } else {
             secondRow.add(CANCEL_DOWNTIME_SUBSCRIPTION.getMessage());
         }
+        if (subscriptions.stream().noneMatch(sub -> sub.getType().equals(PLAYERS_REVIVE))) {
+            secondRow.add(PLAYERS_REVIVE_SUBSCRIPTION.getMessage());
+        } else {
+            secondRow.add(CANCEL_PLAYERS_REVIVE_SUBSCRIPTION.getMessage());
+        }
 
         firstRow.add(MAIN_MENU.getMessage());
         return buildKeyboard(List.of(firstRow, secondRow));

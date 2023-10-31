@@ -1,11 +1,8 @@
 package ru.demo_bot_minecraft.event;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.event.TransactionalEventListener;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.demo_bot_minecraft.bot.TelegramBot;
@@ -16,8 +13,7 @@ public class SendMessageEventListener {
 
     private final TelegramBot telegramBot;
 
-    @TransactionalEventListener(fallbackExecution = true)
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @EventListener
     public void handleContextStart(SendMessageEvent sendMessageEvent) {
         try {
             telegramBot.execute(new SendMessage(sendMessageEvent.getRecipient(), sendMessageEvent.getMessage()));

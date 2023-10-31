@@ -1,5 +1,8 @@
 package ru.demo_bot_minecraft.domain.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum BotMessageEnum {
 
     SERVER_INFO("""
@@ -7,42 +10,36 @@ public enum BotMessageEnum {
         Игроков онайлн: %s
         Сейчас онлайн: %s
         """),
-
     SUBSCRIPTION("""
         Нажмите на кнопки, чтобы подписаться на информацию
         """),
-
     CURRENT_SUBSCRIPTIONS("""
         Вы подписаны на: \n
         """),
-
     PLAY_TIME("""
         Игровое время
         """),
-
     SETTINGS("""
         Настройки
         """),
-
     PLAY_TIME_DATA("""
         Игровое время: \n
         """),
-
     LOGS("""
         Логи: \n
         """),
-
     MAIN_MENU("""
         Главное меню
         """),
-
     NEW_PLAYERS_SUBSCRIPTION_CANCELED("""
         Подписка на новых игроков на сервере, отменена
+        """),
+    PLAYERS_REVIVE_SUBSCRIPTION_CANCELED("""
+        Подписка на возрождения игроков, отменена
         """),
     PLAYERS_JOIN_SUBSCRIPTION_CANCELED("""
         Подписка на вход игроков на сервер, отменена
         """),
-
     DOWNTIME_SUBSCRIPTION_CANCELED("""
         Подписка на падения сервера, отменена
         """),
@@ -82,6 +79,9 @@ public enum BotMessageEnum {
     DOWNTIME_SUBSCRIBED("""
         Теперь вы будете получать сообщения, если сервер упадет
         """),
+    PLAYERS_REVIVE_SUBSCRIBED("""
+        Теперь вы будете получать сообщения, если потребуется возрождение игрока
+        """),
      WELCOME("""
          Привет! Используйте клавиатуру, чтобы давать мне команды
          """),
@@ -103,9 +103,11 @@ public enum BotMessageEnum {
     NEW_PLAYER_JOIN("""
         НОВЫЙ игрок: %s зашел на сервер
         """),
+    PLAYER_WAIT_FOR_REVIVE("""
+        %s помер, чтобы возродить нужно:
+        %s
+        """),
     ;
-
-
 
     private final String message;
 
@@ -113,7 +115,4 @@ public enum BotMessageEnum {
         this.message = message;
     }
 
-    public String getMessage() {
-        return message;
-    }
 }

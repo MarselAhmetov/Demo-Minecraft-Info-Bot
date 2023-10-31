@@ -41,14 +41,14 @@ public class ServerLogsReply implements Reply<Message> {
         var aliases = playerAliasRepository.findAllByUserId(userId).stream()
                 .collect(Collectors.toMap(p -> p.getPlayer().getName(), PlayerAlias::getAlias));
         var text = getText(aliases);
-       return SendMessage.builder()
+        return SendMessage.builder()
                 .chatId(message.getChatId().toString())
                 .text(text)
                 .replyMarkup(keyboards.getDefaultKeyboard())
                 .build();
     }
 
-    public String getText(Map<String, String> aliases) {
+    private String getText(Map<String, String> aliases) {
         StringBuilder messageBuilder = new StringBuilder();
         messageBuilder.append(BotMessageEnum.LOGS.getMessage());
         var events = serverEventRepository.findAllByTimeBetweenOrderByTimeAsc(DateUtils.nowMinusHours(24L), DateUtils.now());
