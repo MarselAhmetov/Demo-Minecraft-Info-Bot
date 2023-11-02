@@ -24,4 +24,5 @@ public class ServerStats {
     @JsonProperty("players")
     Players playersInfo;
     Version version;
+    String favicon;
 }
