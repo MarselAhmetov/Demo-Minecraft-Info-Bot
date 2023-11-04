@@ -5,7 +5,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import ru.demo_bot_minecraft.domain.request.PlayerReviveRequest;
+import ru.demo_bot_minecraft.domain.request.PlayerDeadRequest;
+import ru.demo_bot_minecraft.domain.request.PlayerRevivedRequest;
 import ru.demo_bot_minecraft.service.PlayerReviveService;
 
 @RestController
@@ -15,8 +16,13 @@ public class PlayerReviveController {
 
     private final PlayerReviveService playerReviveService;
 
-    @PostMapping("/api/player/revive")
-    public void sendPlayerRevive(@RequestBody PlayerReviveRequest request) {
+    @PostMapping("/api/player/dead")
+    public void sendPlayerIsDead(@RequestBody PlayerDeadRequest request) {
+        playerReviveService.sendPlayerDead(request);
+    }
+
+    @PostMapping("/api/player/revived")
+    public void sendPlayerRevived(@RequestBody PlayerRevivedRequest request) {
         playerReviveService.sendPlayerRevive(request);
     }
 }

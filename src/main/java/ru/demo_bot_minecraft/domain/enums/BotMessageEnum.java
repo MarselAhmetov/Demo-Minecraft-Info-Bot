@@ -107,6 +107,9 @@ public enum BotMessageEnum {
         %s помер, чтобы возродить нужно:
         %s
         """),
+    PLAYER_REVIVED("""
+        %s возрожден!
+        """),
     ;
 
     private final String message;

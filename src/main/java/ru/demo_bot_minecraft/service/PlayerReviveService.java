@@ -7,7 +7,8 @@ import org.springframework.stereotype.Service;
 import ru.demo_bot_minecraft.domain.database.PlayerAlias;
 import ru.demo_bot_minecraft.domain.database.Subscription;
 import ru.demo_bot_minecraft.domain.database.SubscriptionType;
-import ru.demo_bot_minecraft.domain.request.PlayerReviveRequest;
+import ru.demo_bot_minecraft.domain.request.PlayerDeadRequest;
+import ru.demo_bot_minecraft.domain.request.PlayerRevivedRequest;
 import ru.demo_bot_minecraft.event.SendMessageEvent;
 import ru.demo_bot_minecraft.repository.PlayerAliasRepository;
 import ru.demo_bot_minecraft.repository.SubscriptionRepository;
@@ -15,6 +16,7 @@ import ru.demo_bot_minecraft.repository.SubscriptionRepository;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static ru.demo_bot_minecraft.domain.enums.BotMessageEnum.PLAYER_REVIVED;
 import static ru.demo_bot_minecraft.domain.enums.BotMessageEnum.PLAYER_WAIT_FOR_REVIVE;
 
 @Service
@@ -26,21 +28,20 @@ public class PlayerReviveService {
     private final SubscriptionRepository subscriptionRepository;
     private final PlayerAliasRepository playerAliasRepository;
 
-    public void sendPlayerRevive(PlayerReviveRequest playerReviveRequest) {
+    public void sendPlayerDead(PlayerDeadRequest playerDeadRequest) {
         var subscriptions = subscriptionRepository.findAllByType(SubscriptionType.PLAYERS_REVIVE);
-        var aliases = playerAliasRepository.findAllByPlayerName(playerReviveRequest.getName()).stream()
+        var aliases = playerAliasRepository.findAllByPlayerName(playerDeadRequest.getName()).stream()
                 .collect(Collectors.toMap(p -> p.getUser().getId(), PlayerAlias::getAlias));
         subscriptions.stream()
                 .map(Subscription::getTelegramUser)
-                .filter(user -> !playerReviveRequest.getName().equals(user.getMinecraftName()))
                 .distinct()
                 .forEach(user -> applicationEventPublisher.publishEvent(
                         new SendMessageEvent(
                                 this,
                                 PLAYER_WAIT_FOR_REVIVE.getMessage()
                                         .formatted(
-                                                aliases.getOrDefault(user.getId(), playerReviveRequest.getName()),
-                                                getMaterialsAsText(playerReviveRequest.getMaterials())),
+                                                aliases.getOrDefault(user.getId(), playerDeadRequest.getName()),
+                                                getMaterialsAsText(playerDeadRequest.getMaterials())),
                                 user.getId().toString())
                 ));
     }
@@ -53,4 +54,20 @@ public class PlayerReviveService {
         return messageBuilder.toString();
     }
 
+    public void sendPlayerRevive(PlayerRevivedRequest request) {
+        var subscriptions = subscriptionRepository.findAllByType(SubscriptionType.PLAYERS_REVIVE);
+        var aliases = playerAliasRepository.findAllByPlayerName(request.getName()).stream()
+                .collect(Collectors.toMap(p -> p.getUser().getId(), PlayerAlias::getAlias));
+        subscriptions.stream()
+                .map(Subscription::getTelegramUser)
+                .distinct()
+                .forEach(user -> applicationEventPublisher.publishEvent(
+                        new SendMessageEvent(
+                                this,
+                                PLAYER_REVIVED.getMessage()
+                                        .formatted(aliases.getOrDefault(user.getId(), request.getName())),
+                                user.getId().toString()
+                        )
+                ));
+    }
 }
