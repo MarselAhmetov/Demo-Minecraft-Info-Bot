@@ -13,7 +13,7 @@ import ru.demo_bot_minecraft.domain.Keyboards;
 import ru.demo_bot_minecraft.domain.database.PlayerAlias;
 import ru.demo_bot_minecraft.domain.database.ServerEvent;
 import ru.demo_bot_minecraft.domain.enums.BotMessageEnum;
-import ru.demo_bot_minecraft.domain.enums.BotState;
+import ru.demo_bot_minecraft.domain.enums.UserState;
 import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
 import ru.demo_bot_minecraft.replies.Reply;
 import ru.demo_bot_minecraft.repository.PlayerAliasRepository;
@@ -62,8 +62,8 @@ public class ServerLogsReply implements Reply<Message> {
     }
 
     @Override
-    public BotState getState() {
-        return BotState.DEFAULT;
+    public UserState getRequiredUserState() {
+        return UserState.DEFAULT;
     }
 
     @Override

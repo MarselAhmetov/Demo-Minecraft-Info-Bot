@@ -14,7 +14,7 @@ import lombok.experimental.SuperBuilder;
 @Access(AccessType.FIELD)
 @SuperBuilder
 @NoArgsConstructor
-public class LongIdBaseEntity {
+public abstract class LongIdBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

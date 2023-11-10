@@ -42,13 +42,11 @@
       <artifactId>postgresql</artifactId>
       <scope>runtime</scope>
     </dependency>
-<!--    TODO up version-->
     <dependency>
       <groupId>org.telegram</groupId>
       <artifactId>telegrambots-spring-boot-starter</artifactId>
-      <version>5.3.0</version>
+      <version>6.8.0</version>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
@@ -66,6 +64,10 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-validation</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-core</artifactId>
     </dependency>
   </dependencies>
 

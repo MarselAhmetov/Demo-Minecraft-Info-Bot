@@ -98,7 +98,7 @@ public class Keyboards {
     }
 
     public ReplyKeyboardMarkup getByState(TelegramUser user) {
-        return switch (user.getBotState()) {
+        return switch (user.getState()) {
             case DEFAULT -> getDefaultKeyboard();
             case SUBSCRIPTION -> getSubscriptionsKeyboard(user.getId());
             case PLAY_TIME -> getPlayTimeKeyboard();

@@ -7,7 +7,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.demo_bot_minecraft.domain.Keyboards;
 import ru.demo_bot_minecraft.domain.enums.BotMessageEnum;
-import ru.demo_bot_minecraft.domain.enums.BotState;
+import ru.demo_bot_minecraft.domain.enums.UserState;
 import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
 import ru.demo_bot_minecraft.replies.Reply;
 import ru.demo_bot_minecraft.repository.SubscriptionRepository;
@@ -31,7 +31,7 @@ public class SubscriptionsReply implements Reply<Message> {
 
     @Override
     public BotApiMethod<?> getReply(Message message) {
-        telegramUserRepository.setState(message.getFrom().getId(), BotState.SUBSCRIPTION);
+        telegramUserRepository.setState(message.getFrom().getId(), UserState.SUBSCRIPTION);
         return SendMessage.builder()
             .chatId(message.getChatId().toString())
             .replyMarkup(keyboards.getSubscriptionsKeyboard(message.getFrom().getId()))
@@ -53,8 +53,8 @@ public class SubscriptionsReply implements Reply<Message> {
     }
 
     @Override
-    public BotState getState() {
-        return BotState.DEFAULT;
+    public UserState getRequiredUserState() {
+        return UserState.DEFAULT;
     }
 
     @Override
