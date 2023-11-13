@@ -110,6 +110,9 @@ public enum BotMessageEnum {
     PLAYER_REVIVED("""
         %s возрожден!
         """),
+    ADMIN_SECTION("""
+        Админская секция
+            """),
     BANNED("""
         Вы забанены администратором
             """),

@@ -31,6 +31,7 @@ public class Keyboards {
         KeyboardRow thirdRow = new KeyboardRow();
 
         thirdRow.add(SETTINGS.getMessage());
+        thirdRow.add(ADMIN_SECTION.getMessage());
 
         return buildKeyboard(List.of(firstRow, secondRow, thirdRow));
     }
@@ -83,6 +84,16 @@ public class Keyboards {
         return buildKeyboard(List.of(firstRow, secondRow));
     }
 
+    public ReplyKeyboardMarkup getAdminSectionKeyboard() {
+        KeyboardRow firstRow = new KeyboardRow();
+        firstRow.add(BAN_USER.getMessage());
+        firstRow.add(UNBAN_USER.getMessage());
+        KeyboardRow secondRow = new KeyboardRow();
+        secondRow.add(USERS_LIST.getMessage());
+        secondRow.add(MAIN_MENU.getMessage());
+        return buildKeyboard(List.of(firstRow, secondRow));
+    }
+
     public ReplyKeyboardMarkup getSettingsKeyboard(TelegramUser user) {
 
         KeyboardRow firstRow = new KeyboardRow();
@@ -103,6 +114,8 @@ public class Keyboards {
             case SUBSCRIPTION -> getSubscriptionsKeyboard(user.getId());
             case PLAY_TIME -> getPlayTimeKeyboard();
             case SETTINGS -> getSettingsKeyboard(user);
+            case ADMIN_SECTION -> getAdminSectionKeyboard();
+            case ALIASES -> getAliasesKeyboard();
             default -> null;
         };
     }
