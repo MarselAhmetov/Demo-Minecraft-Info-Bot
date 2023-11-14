@@ -38,7 +38,7 @@ public class UserToApproveReply implements Reply<Message> {
             userRepository.save(telegramUser);
             return SendMessage.builder()
                 .chatId(message.getChatId().toString())
-                .text(BotMessageEnum.ENTER_USERNAME_TO_APPROVE.getMessage().formatted(telegramUser.getUserName()))
+                .text(BotMessageEnum.USER_APPROVED.getMessage().formatted(telegramUser.getUserName()))
                 .build();
         } else {
             return SendMessage.builder()

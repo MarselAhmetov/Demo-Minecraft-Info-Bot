@@ -93,8 +93,10 @@ public class Keyboards {
         firstRow.add(UNBAN_USER.getMessage());
         KeyboardRow secondRow = new KeyboardRow();
         secondRow.add(USERS_LIST.getMessage());
-        secondRow.add(MAIN_MENU.getMessage());
-        return buildKeyboard(List.of(firstRow, secondRow));
+        secondRow.add(APPROVE_USER.getMessage());
+        KeyboardRow thirdRow = new KeyboardRow();
+        thirdRow.add(MAIN_MENU.getMessage());
+        return buildKeyboard(List.of(firstRow, secondRow, thirdRow));
     }
 
     public ReplyKeyboardMarkup getSettingsKeyboard(TelegramUser user) {
