@@ -30,11 +30,12 @@ public class MainMenuReply implements Reply<Message> {
     @Override
     @Transactional
     public BotApiMethod<?> getReply(Message message) {
+        var user = userRepository.getById(message.getFrom().getId());
         userRepository.setState(message.getFrom().getId(), UserState.DEFAULT);
         return SendMessage.builder()
             .chatId(message.getChatId().toString())
             .text(BotMessageEnum.MAIN_MENU.getMessage())
-            .replyMarkup(keyboards.getDefaultKeyboard())
+            .replyMarkup(keyboards.getDefaultKeyboard(user.getRole()))
             .build();
     }
 

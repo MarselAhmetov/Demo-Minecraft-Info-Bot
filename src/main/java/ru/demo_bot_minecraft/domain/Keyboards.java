@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import ru.demo_bot_minecraft.domain.database.TelegramUser;
+import ru.demo_bot_minecraft.domain.database.TelegramUserRole;
 import ru.demo_bot_minecraft.repository.SubscriptionRepository;
 
 import static ru.demo_bot_minecraft.domain.database.SubscriptionType.*;
@@ -17,7 +18,7 @@ public class Keyboards {
 
     private final SubscriptionRepository subscriptionRepository;
 
-    public ReplyKeyboardMarkup getDefaultKeyboard() {
+    public ReplyKeyboardMarkup getDefaultKeyboard(TelegramUserRole role) {
         KeyboardRow firstRow = new KeyboardRow();
         
         firstRow.add(SERVER.getMessage());
@@ -31,7 +32,9 @@ public class Keyboards {
         KeyboardRow thirdRow = new KeyboardRow();
 
         thirdRow.add(SETTINGS.getMessage());
-        thirdRow.add(ADMIN_SECTION.getMessage());
+        if (role.equals(TelegramUserRole.ADMIN)) {
+            thirdRow.add(ADMIN_SECTION.getMessage());
+        }
 
         return buildKeyboard(List.of(firstRow, secondRow, thirdRow));
     }
@@ -110,7 +113,7 @@ public class Keyboards {
 
     public ReplyKeyboardMarkup getByState(TelegramUser user) {
         return switch (user.getState()) {
-            case DEFAULT -> getDefaultKeyboard();
+            case DEFAULT -> getDefaultKeyboard(user.getRole());
             case SUBSCRIPTION -> getSubscriptionsKeyboard(user.getId());
             case PLAY_TIME -> getPlayTimeKeyboard();
             case SETTINGS -> getSettingsKeyboard(user);

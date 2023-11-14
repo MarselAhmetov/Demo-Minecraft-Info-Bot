@@ -13,11 +13,11 @@ import ru.demo_bot_minecraft.domain.Keyboards;
 import ru.demo_bot_minecraft.domain.database.PlayerAlias;
 import ru.demo_bot_minecraft.domain.database.ServerEvent;
 import ru.demo_bot_minecraft.domain.enums.BotMessageEnum;
-import ru.demo_bot_minecraft.domain.enums.UserState;
 import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
 import ru.demo_bot_minecraft.replies.Reply;
 import ru.demo_bot_minecraft.repository.PlayerAliasRepository;
 import ru.demo_bot_minecraft.repository.ServerEventRepository;
+import ru.demo_bot_minecraft.repository.TelegramUserRepository;
 import ru.demo_bot_minecraft.util.DateUtils;
 
 import static ru.demo_bot_minecraft.util.ReplyUtils.messageEquals;
@@ -29,6 +29,7 @@ public class ServerLogsReply implements Reply<Message> {
     private final ServerEventRepository serverEventRepository;
     private final PlayerAliasRepository playerAliasRepository;
     private final Keyboards keyboards;
+    private final TelegramUserRepository userRepository;
 
     @Override
     public boolean predicate(Message message) {
@@ -38,13 +39,14 @@ public class ServerLogsReply implements Reply<Message> {
     @Override
     public BotApiMethod<?> getReply(Message message) {
         var userId = message.getFrom().getId();
+        var user = userRepository.getById(userId);
         var aliases = playerAliasRepository.findAllByUserId(userId).stream()
                 .collect(Collectors.toMap(p -> p.getPlayer().getName(), PlayerAlias::getAlias));
         var text = getText(aliases);
         return SendMessage.builder()
                 .chatId(message.getChatId().toString())
                 .text(text)
-                .replyMarkup(keyboards.getDefaultKeyboard())
+                .replyMarkup(keyboards.getDefaultKeyboard(user.getRole()))
                 .build();
     }
 
@@ -59,11 +61,6 @@ public class ServerLogsReply implements Reply<Message> {
                     .append("\n");
         }
         return messageBuilder.toString();
-    }
-
-    @Override
-    public UserState getRequiredUserState() {
-        return UserState.DEFAULT;
     }
 
     @Override

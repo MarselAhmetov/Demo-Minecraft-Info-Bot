@@ -56,15 +56,16 @@ public class MessageHandler {
                     .build();
         }
         if (inputText.equals(RequestMessagesEnum.START.getMessage())) {
-            return getStartMessage(chatId);
+            return getStartMessage(message, user);
         }
         return stateDispatcher.dispatch(user, message, user.getState());
     }
 
-    private SendMessage getStartMessage(String chatId) {
+    private SendMessage getStartMessage(Message message, TelegramUser user) {
+        var chatId = message.getChatId().toString();
         SendMessage sendMessage = new SendMessage(chatId, BotMessageEnum.WELCOME.getMessage());
         sendMessage.enableMarkdown(true);
-        sendMessage.setReplyMarkup(keyboards.getDefaultKeyboard());
+        sendMessage.setReplyMarkup(keyboards.getDefaultKeyboard(user.getRole()));
         return sendMessage;
     }
 }
