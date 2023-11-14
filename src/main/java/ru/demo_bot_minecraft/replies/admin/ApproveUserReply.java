@@ -7,7 +7,7 @@ import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.demo_bot_minecraft.domain.database.TelegramUserRole;
-import ru.demo_bot_minecraft.domain.enums.BotMessageEnum;
+import ru.demo_bot_minecraft.domain.enums.BotMessage;
 import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
 import ru.demo_bot_minecraft.domain.enums.UserState;
 import ru.demo_bot_minecraft.replies.Reply;
@@ -32,7 +32,7 @@ public class ApproveUserReply implements Reply<Message> {
         userRepository.setState(message.getFrom().getId(), UserState.APPROVE_USER);
         return SendMessage.builder()
             .chatId(message.getChatId().toString())
-            .text(BotMessageEnum.ENTER_USERNAME_TO_APPROVE.getMessage())
+            .text(BotMessage.ENTER_USERNAME_TO_APPROVE.getMessage())
             .build();
     }
 

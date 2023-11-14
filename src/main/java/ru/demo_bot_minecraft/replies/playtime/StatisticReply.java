@@ -28,7 +28,7 @@ import ru.demo_bot_minecraft.domain.database.PlayerAlias;
 import ru.demo_bot_minecraft.domain.database.ServerEvent;
 import ru.demo_bot_minecraft.domain.dto.PlayHistory;
 import ru.demo_bot_minecraft.domain.dto.ServerAction;
-import ru.demo_bot_minecraft.domain.enums.BotMessageEnum;
+import ru.demo_bot_minecraft.domain.enums.BotMessage;
 import ru.demo_bot_minecraft.domain.enums.UserState;
 import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
 import ru.demo_bot_minecraft.replies.Reply;
@@ -67,7 +67,7 @@ public class StatisticReply implements Reply<Message> {
         var playHistories = getStatisticData(serverEvents);
         playHistories.sort((o1, o2) -> o2.getPlayTimeSeconds().compareTo(o1.getPlayTimeSeconds()));
         StringBuilder messageBuilder = new StringBuilder();
-        messageBuilder.append(BotMessageEnum.PLAY_TIME_DATA.getMessage());
+        messageBuilder.append(BotMessage.PLAY_TIME_DATA.getMessage());
         playHistories.forEach(playHistory -> messageBuilder.append(aliases.getOrDefault(playHistory.getPlayerName(), playHistory.getPlayerName())).append(" ")
             .append(playHistory.getPlayTimeSeconds() / SECONDS_IN_HOUR).append(":")
             .append((playHistory.getPlayTimeSeconds() % SECONDS_IN_HOUR) / SECONDS_IN_MINUTES).append(":")
@@ -82,11 +82,6 @@ public class StatisticReply implements Reply<Message> {
     @Override
     public UserState getRequiredUserState() {
         return UserState.PLAY_TIME;
-    }
-
-    @Override
-    public boolean availableInAnyState() {
-        return false;
     }
 
     private List<ServerEvent> findServerEvents(String text) {
@@ -158,7 +153,7 @@ public class StatisticReply implements Reply<Message> {
             text.equalsIgnoreCase(RequestMessagesEnum.ALL_TIME.getMessage());
 
         if (result) {
-            return result;
+            return true;
         }
 
         boolean isDate = GenericValidator.isDate(text, dateFormat, true);
@@ -172,9 +167,7 @@ public class StatisticReply implements Reply<Message> {
                 .results()
                 .map(MatchResult::group)
                 .toArray(String[]::new);
-            if (matches.length == 2) {
-                return true;
-            }
+            return matches.length == 2;
         }
 
         return false;

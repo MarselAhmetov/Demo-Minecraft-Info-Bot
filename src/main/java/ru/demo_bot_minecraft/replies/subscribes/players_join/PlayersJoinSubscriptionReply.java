@@ -9,7 +9,7 @@ import ru.demo_bot_minecraft.domain.Keyboards;
 import ru.demo_bot_minecraft.domain.database.Subscription;
 import ru.demo_bot_minecraft.domain.database.SubscriptionType;
 import ru.demo_bot_minecraft.domain.database.TelegramUser;
-import ru.demo_bot_minecraft.domain.enums.BotMessageEnum;
+import ru.demo_bot_minecraft.domain.enums.BotMessage;
 import ru.demo_bot_minecraft.domain.enums.UserState;
 import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
 import ru.demo_bot_minecraft.replies.Reply;
@@ -34,7 +34,7 @@ public class PlayersJoinSubscriptionReply implements Reply<Message> {
             .telegramUser(TelegramUser.builder().id(message.getFrom().getId()).build())
             .type(SubscriptionType.PLAYERS_JOIN)
             .build());
-        SendMessage sendMessage = new SendMessage(message.getChatId().toString(), BotMessageEnum.PLAYERS_JOIN_SUBSCRIBED.getMessage());
+        SendMessage sendMessage = new SendMessage(message.getChatId().toString(), BotMessage.PLAYERS_JOIN_SUBSCRIBED.getMessage());
         sendMessage.setReplyMarkup(keyboards.getSubscriptionsKeyboard(message.getFrom().getId()));
         return sendMessage;
     }
@@ -42,10 +42,5 @@ public class PlayersJoinSubscriptionReply implements Reply<Message> {
     @Override
     public UserState getRequiredUserState() {
         return UserState.SUBSCRIPTION;
-    }
-
-    @Override
-    public boolean availableInAnyState() {
-        return false;
     }
 }

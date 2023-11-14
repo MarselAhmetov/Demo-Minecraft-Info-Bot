@@ -34,8 +34,8 @@ import ru.demo_bot_minecraft.repository.SubscriptionRepository;
 import ru.demo_bot_minecraft.service.MinecraftService;
 import ru.demo_bot_minecraft.util.DateUtils;
 
-import static ru.demo_bot_minecraft.domain.enums.BotMessageEnum.NEW_PLAYER_JOIN;
-import static ru.demo_bot_minecraft.domain.enums.BotMessageEnum.PLAYER_JOIN;
+import static ru.demo_bot_minecraft.domain.enums.BotMessage.NEW_PLAYER_JOIN;
+import static ru.demo_bot_minecraft.domain.enums.BotMessage.PLAYER_JOIN;
 
 @Component
 @RequiredArgsConstructor

@@ -7,7 +7,7 @@ import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.demo_bot_minecraft.domain.Keyboards;
-import ru.demo_bot_minecraft.domain.enums.BotMessageEnum;
+import ru.demo_bot_minecraft.domain.enums.BotMessage;
 import ru.demo_bot_minecraft.domain.enums.UserState;
 import ru.demo_bot_minecraft.replies.Reply;
 import ru.demo_bot_minecraft.repository.PlayerAliasRepository;
@@ -40,13 +40,8 @@ public class EnterAliasToRemoveReply implements Reply<Message> {
         var alias = message.getText();
         playerAliasRepository.deleteByUserIdAndAlias(userId, alias);
         telegramUserRepository.setState(message.getFrom().getId(), UserState.ALIASES);
-        SendMessage sendMessage = new SendMessage(message.getChatId().toString(), BotMessageEnum.ALIAS_REMOVED.getMessage());
+        SendMessage sendMessage = new SendMessage(message.getChatId().toString(), BotMessage.ALIAS_REMOVED.getMessage());
         sendMessage.setReplyMarkup(keyboards.getAliasesKeyboard());
         return sendMessage;
-    }
-
-    @Override
-    public boolean availableInAnyState() {
-        return false;
     }
 }

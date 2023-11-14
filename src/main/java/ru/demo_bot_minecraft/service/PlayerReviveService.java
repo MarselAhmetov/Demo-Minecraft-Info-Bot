@@ -16,8 +16,8 @@ import ru.demo_bot_minecraft.repository.SubscriptionRepository;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static ru.demo_bot_minecraft.domain.enums.BotMessageEnum.PLAYER_REVIVED;
-import static ru.demo_bot_minecraft.domain.enums.BotMessageEnum.PLAYER_WAIT_FOR_REVIVE;
+import static ru.demo_bot_minecraft.domain.enums.BotMessage.PLAYER_REVIVED;
+import static ru.demo_bot_minecraft.domain.enums.BotMessage.PLAYER_WAIT_FOR_REVIVE;
 
 @Service
 @RequiredArgsConstructor

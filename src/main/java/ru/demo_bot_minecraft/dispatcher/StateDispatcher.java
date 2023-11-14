@@ -16,7 +16,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.demo_bot_minecraft.domain.Keyboards;
 import ru.demo_bot_minecraft.domain.database.TelegramUser;
 import ru.demo_bot_minecraft.domain.database.TelegramUserRole;
-import ru.demo_bot_minecraft.domain.enums.BotMessageEnum;
+import ru.demo_bot_minecraft.domain.enums.BotMessage;
 import ru.demo_bot_minecraft.replies.Reply;
 import ru.demo_bot_minecraft.domain.enums.UserState;
 import ru.demo_bot_minecraft.repository.TelegramUserRepository;
@@ -59,7 +59,7 @@ public class StateDispatcher {
                 .map(reply -> reply.getReply(message))
                 .orElseGet(() -> {
                     var sendMessage = getSendMessage(message);
-                    sendMessage.setText(BotMessageEnum.USE_THE_KEYBOARD.getMessage());
+                    sendMessage.setText(BotMessage.USE_THE_KEYBOARD.getMessage());
                     var user = userRepository.getById(message.getFrom().getId());
                     sendMessage.setReplyMarkup(keyboards.getByState(user));
                     return (BotApiMethod) sendMessage;

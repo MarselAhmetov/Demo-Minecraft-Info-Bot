@@ -7,7 +7,7 @@ import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.demo_bot_minecraft.domain.Keyboards;
-import ru.demo_bot_minecraft.domain.enums.BotMessageEnum;
+import ru.demo_bot_minecraft.domain.enums.BotMessage;
 import ru.demo_bot_minecraft.domain.enums.UserState;
 import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
 import ru.demo_bot_minecraft.replies.Reply;
@@ -32,7 +32,7 @@ public class RemoveNicknameReply implements Reply<Message> {
     public BotApiMethod<?> getReply(Message message) {
         var user = telegramUserRepository.getById(message.getFrom().getId());
         user.setMinecraftName(null);
-        SendMessage sendMessage = new SendMessage(message.getChatId().toString(), BotMessageEnum.NICKNAME_REMOVED.getMessage());
+        SendMessage sendMessage = new SendMessage(message.getChatId().toString(), BotMessage.NICKNAME_REMOVED.getMessage());
         sendMessage.setReplyMarkup(keyboards.getSettingsKeyboard(user));
         return sendMessage;
     }
@@ -41,10 +41,4 @@ public class RemoveNicknameReply implements Reply<Message> {
     public UserState getRequiredUserState() {
         return UserState.SETTINGS;
     }
-
-    @Override
-    public boolean availableInAnyState() {
-        return false;
-    }
-
 }
