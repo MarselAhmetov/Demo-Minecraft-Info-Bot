@@ -41,10 +41,4 @@ public class RemoveNicknameReply implements Reply<Message> {
     public UserState getRequiredUserState() {
         return UserState.SETTINGS;
     }
-
-    @Override
-    public boolean availableInAnyState() {
-        return false;
-    }
-
 }

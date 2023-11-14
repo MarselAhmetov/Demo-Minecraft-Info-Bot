@@ -41,9 +41,4 @@ public class EnterNicknameReply implements Reply<Message> {
     public UserState getRequiredUserState() {
         return UserState.ADD_NICKNAME;
     }
-
-    @Override
-    public boolean availableInAnyState() {
-        return false;
-    }
 }

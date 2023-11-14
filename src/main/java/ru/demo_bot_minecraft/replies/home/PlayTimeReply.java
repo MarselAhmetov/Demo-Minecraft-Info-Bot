@@ -38,14 +38,4 @@ public class PlayTimeReply implements Reply<Message> {
             .replyMarkup(keyboards.getPlayTimeKeyboard())
             .build();
     }
-
-    @Override
-    public UserState getRequiredUserState() {
-        return UserState.DEFAULT;
-    }
-
-    @Override
-    public boolean availableInAnyState() {
-        return false;
-    }
 }

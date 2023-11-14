@@ -44,9 +44,4 @@ public class EnterAliasToRemoveReply implements Reply<Message> {
         sendMessage.setReplyMarkup(keyboards.getAliasesKeyboard());
         return sendMessage;
     }
-
-    @Override
-    public boolean availableInAnyState() {
-        return false;
-    }
 }

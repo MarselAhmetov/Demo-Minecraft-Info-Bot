@@ -56,9 +56,4 @@ public class AliasesReply implements Reply<Message> {
         }
         return response.toString();
     }
-
-    @Override
-    public boolean availableInAnyState() {
-        return false;
-    }
 }

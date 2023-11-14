@@ -51,14 +51,4 @@ public class SubscriptionsReply implements Reply<Message> {
         }
         return messageBuilder.toString();
     }
-
-    @Override
-    public UserState getRequiredUserState() {
-        return UserState.DEFAULT;
-    }
-
-    @Override
-    public boolean availableInAnyState() {
-        return false;
-    }
 }

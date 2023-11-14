@@ -39,9 +39,4 @@ public class AddNicknameReply implements Reply<Message> {
         sendMessage.setReplyMarkup(null);
         return sendMessage;
     }
-
-    @Override
-    public boolean availableInAnyState() {
-        return false;
-    }
 }

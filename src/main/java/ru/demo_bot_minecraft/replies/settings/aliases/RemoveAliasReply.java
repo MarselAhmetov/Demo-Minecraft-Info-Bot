@@ -40,9 +40,4 @@ public class RemoveAliasReply implements Reply<Message> {
         sendMessage.setReplyMarkup(keyboards.getAliasesKeyboard());
         return sendMessage;
     }
-
-    @Override
-    public boolean availableInAnyState() {
-        return false;
-    }
 }

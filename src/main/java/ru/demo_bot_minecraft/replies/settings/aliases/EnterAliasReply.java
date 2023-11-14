@@ -52,15 +52,13 @@ public class EnterAliasReply implements Reply<Message> {
         existing.ifPresentOrElse(playerAlias -> {
             playerAlias.setAlias(playerNameAndAlias.getSecond());
             playerAliasRepository.save(playerAlias);
-        }, () -> {
-            playerAliasRepository.save(
-                    PlayerAlias.builder()
-                            .player(player)
-                            .alias(playerNameAndAlias.getSecond())
-                            .user(TelegramUser.builder().id(userId).build())
-                            .build()
-            );
-        });
+        }, () -> playerAliasRepository.save(
+                PlayerAlias.builder()
+                        .player(player)
+                        .alias(playerNameAndAlias.getSecond())
+                        .user(TelegramUser.builder().id(userId).build())
+                        .build()
+        ));
         telegramUserRepository.setState(message.getFrom().getId(), UserState.ALIASES);
         SendMessage sendMessage = new SendMessage(message.getChatId().toString(), BotMessage.ALIAS_ADDED.getMessage());
         sendMessage.setReplyMarkup(keyboards.getAliasesKeyboard());
@@ -81,10 +79,5 @@ public class EnterAliasReply implements Reply<Message> {
             return Pair.of(arr[0], arr[1]);
         }
         throw new IllegalArgumentException("Invalid message");
-    }
-
-    @Override
-    public boolean availableInAnyState() {
-        return false;
     }
 }

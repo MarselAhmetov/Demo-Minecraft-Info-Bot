@@ -84,11 +84,6 @@ public class StatisticReply implements Reply<Message> {
         return UserState.PLAY_TIME;
     }
 
-    @Override
-    public boolean availableInAnyState() {
-        return false;
-    }
-
     private List<ServerEvent> findServerEvents(String text) {
         if (text.equalsIgnoreCase(RequestMessagesEnum.TODAY.getMessage())) {
             return serverEventRepository.findAllByTimeBetweenOrderByTimeAsc(
@@ -158,7 +153,7 @@ public class StatisticReply implements Reply<Message> {
             text.equalsIgnoreCase(RequestMessagesEnum.ALL_TIME.getMessage());
 
         if (result) {
-            return result;
+            return true;
         }
 
         boolean isDate = GenericValidator.isDate(text, dateFormat, true);
@@ -172,9 +167,7 @@ public class StatisticReply implements Reply<Message> {
                 .results()
                 .map(MatchResult::group)
                 .toArray(String[]::new);
-            if (matches.length == 2) {
-                return true;
-            }
+            return matches.length == 2;
         }
 
         return false;

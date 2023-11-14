@@ -43,9 +43,4 @@ public class NewPlayersSubscriptionReply implements Reply<Message> {
     public UserState getRequiredUserState() {
         return UserState.SUBSCRIPTION;
     }
-
-    @Override
-    public boolean availableInAnyState() {
-        return false;
-    }
 }
