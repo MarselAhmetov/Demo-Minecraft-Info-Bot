@@ -6,7 +6,7 @@ import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.demo_bot_minecraft.domain.Keyboards;
-import ru.demo_bot_minecraft.domain.enums.BotMessageEnum;
+import ru.demo_bot_minecraft.domain.enums.BotMessage;
 import ru.demo_bot_minecraft.domain.enums.UserState;
 import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
 import ru.demo_bot_minecraft.replies.Reply;
@@ -44,10 +44,10 @@ public class SubscriptionsReply implements Reply<Message> {
             .findAllByTelegramUserId(message.getFrom().getId());
         StringBuilder messageBuilder = new StringBuilder();
         if (!subscriptions.isEmpty()) {
-            messageBuilder.append(BotMessageEnum.CURRENT_SUBSCRIPTIONS.getMessage());
+            messageBuilder.append(BotMessage.CURRENT_SUBSCRIPTIONS.getMessage());
             subscriptions.forEach( subscription -> messageBuilder.append(subscription.getType().name()).append("\n"));
         } else {
-            messageBuilder.append(BotMessageEnum.SUBSCRIPTION.getMessage());
+            messageBuilder.append(BotMessage.SUBSCRIPTION.getMessage());
         }
         return messageBuilder.toString();
     }

@@ -9,7 +9,7 @@ import ru.demo_bot_minecraft.domain.Keyboards;
 import ru.demo_bot_minecraft.domain.database.Subscription;
 import ru.demo_bot_minecraft.domain.database.SubscriptionType;
 import ru.demo_bot_minecraft.domain.database.TelegramUser;
-import ru.demo_bot_minecraft.domain.enums.BotMessageEnum;
+import ru.demo_bot_minecraft.domain.enums.BotMessage;
 import ru.demo_bot_minecraft.domain.enums.UserState;
 import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
 import ru.demo_bot_minecraft.replies.Reply;
@@ -34,7 +34,7 @@ public class DowntimeSubscriptionReply implements Reply<Message> {
             .telegramUser(TelegramUser.builder().id(message.getFrom().getId()).build())
             .type(SubscriptionType.DOWNTIME)
             .build());
-        SendMessage sendMessage = new SendMessage(message.getChatId().toString(), BotMessageEnum.DOWNTIME_SUBSCRIBED.getMessage());
+        SendMessage sendMessage = new SendMessage(message.getChatId().toString(), BotMessage.DOWNTIME_SUBSCRIBED.getMessage());
         sendMessage.setReplyMarkup(keyboards.getSubscriptionsKeyboard(message.getFrom().getId()));
         return sendMessage;
     }

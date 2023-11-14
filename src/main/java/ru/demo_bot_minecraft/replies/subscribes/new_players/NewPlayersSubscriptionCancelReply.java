@@ -8,7 +8,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.demo_bot_minecraft.domain.Keyboards;
 import ru.demo_bot_minecraft.domain.database.SubscriptionType;
-import ru.demo_bot_minecraft.domain.enums.BotMessageEnum;
+import ru.demo_bot_minecraft.domain.enums.BotMessage;
 import ru.demo_bot_minecraft.domain.enums.UserState;
 import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
 import ru.demo_bot_minecraft.replies.Reply;
@@ -32,7 +32,7 @@ public class NewPlayersSubscriptionCancelReply implements Reply<Message> {
     @Transactional
     public BotApiMethod<?> getReply(Message message) {
         subscriptionRepository.deleteByTelegramUserIdAndType(message.getFrom().getId(), SubscriptionType.NEW_PLAYERS);
-        SendMessage sendMessage = new SendMessage(message.getChatId().toString(), BotMessageEnum.NEW_PLAYERS_SUBSCRIPTION_CANCELED.getMessage());
+        SendMessage sendMessage = new SendMessage(message.getChatId().toString(), BotMessage.NEW_PLAYERS_SUBSCRIPTION_CANCELED.getMessage());
         sendMessage.setReplyMarkup(keyboards.getSubscriptionsKeyboard(message.getFrom().getId()));
         return sendMessage;
     }

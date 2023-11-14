@@ -11,7 +11,7 @@ import ru.demo_bot_minecraft.dispatcher.StateDispatcher;
 import ru.demo_bot_minecraft.domain.Keyboards;
 import ru.demo_bot_minecraft.domain.database.TelegramUser;
 import ru.demo_bot_minecraft.domain.database.TelegramUserStatus;
-import ru.demo_bot_minecraft.domain.enums.BotMessageEnum;
+import ru.demo_bot_minecraft.domain.enums.BotMessage;
 import ru.demo_bot_minecraft.domain.enums.UserState;
 import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
 import ru.demo_bot_minecraft.repository.TelegramUserRepository;
@@ -63,7 +63,7 @@ public class MessageHandler {
 
     private SendMessage getStartMessage(Message message, TelegramUser user) {
         var chatId = message.getChatId().toString();
-        SendMessage sendMessage = new SendMessage(chatId, BotMessageEnum.WELCOME.getMessage());
+        SendMessage sendMessage = new SendMessage(chatId, BotMessage.WELCOME.getMessage());
         sendMessage.enableMarkdown(true);
         sendMessage.setReplyMarkup(keyboards.getDefaultKeyboard(user.getRole()));
         return sendMessage;

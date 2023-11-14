@@ -8,7 +8,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.demo_bot_minecraft.domain.Keyboards;
 import ru.demo_bot_minecraft.domain.database.TelegramUserRole;
-import ru.demo_bot_minecraft.domain.enums.BotMessageEnum;
+import ru.demo_bot_minecraft.domain.enums.BotMessage;
 import ru.demo_bot_minecraft.domain.enums.UserState;
 import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
 import ru.demo_bot_minecraft.replies.Reply;
@@ -35,7 +35,7 @@ public class AdminSectionReply implements Reply<Message> {
         userRepository.setState(message.getFrom().getId(), UserState.ADMIN_SECTION);
         return SendMessage.builder()
             .chatId(message.getChatId().toString())
-            .text(BotMessageEnum.PLAY_TIME.getMessage())
+            .text(BotMessage.PLAY_TIME.getMessage())
             .replyMarkup(keyboards.getAdminSectionKeyboard())
             .build();
     }

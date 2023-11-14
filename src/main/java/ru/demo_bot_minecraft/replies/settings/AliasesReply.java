@@ -8,7 +8,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.demo_bot_minecraft.domain.Keyboards;
 import ru.demo_bot_minecraft.domain.database.PlayerAlias;
-import ru.demo_bot_minecraft.domain.enums.BotMessageEnum;
+import ru.demo_bot_minecraft.domain.enums.BotMessage;
 import ru.demo_bot_minecraft.domain.enums.UserState;
 import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
 import ru.demo_bot_minecraft.replies.Reply;
@@ -50,7 +50,7 @@ public class AliasesReply implements Reply<Message> {
     }
 
     private String buildAliasesMessage(List<PlayerAlias> aliases) {
-        StringBuilder response = new StringBuilder(BotMessageEnum.CURRENT_ALIASES.getMessage());
+        StringBuilder response = new StringBuilder(BotMessage.CURRENT_ALIASES.getMessage());
         for (PlayerAlias alias : aliases) {
             response.append(alias.getAlias()).append(" | ").append(alias.getPlayer().getName()).append("\n");
         }

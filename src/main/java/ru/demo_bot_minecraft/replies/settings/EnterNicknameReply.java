@@ -7,7 +7,7 @@ import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.demo_bot_minecraft.domain.Keyboards;
-import ru.demo_bot_minecraft.domain.enums.BotMessageEnum;
+import ru.demo_bot_minecraft.domain.enums.BotMessage;
 import ru.demo_bot_minecraft.domain.enums.UserState;
 import ru.demo_bot_minecraft.replies.Reply;
 import ru.demo_bot_minecraft.repository.TelegramUserRepository;
@@ -32,7 +32,7 @@ public class EnterNicknameReply implements Reply<Message> {
         var user = telegramUserRepository.getById(message.getFrom().getId());
         user.setMinecraftName(message.getText());
         user.setState(UserState.SETTINGS);
-        SendMessage sendMessage = new SendMessage(message.getChatId().toString(), BotMessageEnum.NICKNAME_ADDED.getMessage());
+        SendMessage sendMessage = new SendMessage(message.getChatId().toString(), BotMessage.NICKNAME_ADDED.getMessage());
         sendMessage.setReplyMarkup(keyboards.getSettingsKeyboard(user));
         return sendMessage;
     }

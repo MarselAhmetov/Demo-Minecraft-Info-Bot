@@ -7,7 +7,7 @@ import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.demo_bot_minecraft.domain.Keyboards;
-import ru.demo_bot_minecraft.domain.enums.BotMessageEnum;
+import ru.demo_bot_minecraft.domain.enums.BotMessage;
 import ru.demo_bot_minecraft.domain.enums.UserState;
 import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
 import ru.demo_bot_minecraft.replies.Reply;
@@ -36,7 +36,7 @@ public class RemoveAliasReply implements Reply<Message> {
     @Transactional
     public BotApiMethod<?> getReply(Message message) {
         telegramUserRepository.setState(message.getFrom().getId(), UserState.REMOVE_ALIAS);
-        SendMessage sendMessage = new SendMessage(message.getChatId().toString(), BotMessageEnum.ENTER_PLAYER_NAME_TO_REMOVE_ALIAS.getMessage());
+        SendMessage sendMessage = new SendMessage(message.getChatId().toString(), BotMessage.ENTER_PLAYER_NAME_TO_REMOVE_ALIAS.getMessage());
         sendMessage.setReplyMarkup(keyboards.getAliasesKeyboard());
         return sendMessage;
     }

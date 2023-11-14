@@ -3,7 +3,7 @@ package ru.demo_bot_minecraft.domain.enums;
 import lombok.Getter;
 
 @Getter
-public enum BotMessageEnum {
+public enum BotMessage {
 
     SERVER_INFO("""
         Minecraft сервер: %s
@@ -128,11 +128,17 @@ public enum BotMessageEnum {
     USER_NOT_FOUND("""
         Пользователь %s не найден
         """),
+    USER_WAITING_FOR_APPROVE("""
+        Пользователь %s ожидает подтверждения
+        """),
+    USERS_WAITING_FOR_APPROVE("""
+        Пользователи ожидающие подтверждения: \n
+        """),
     ;
 
     private final String message;
 
-    BotMessageEnum(String message) {
+    BotMessage(String message) {
         this.message = message;
     }
 
