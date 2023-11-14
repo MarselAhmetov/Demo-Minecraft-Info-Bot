@@ -7,6 +7,8 @@ import ru.demo_bot_minecraft.domain.database.TelegramUserStatus;
 import ru.demo_bot_minecraft.repository.SubscriptionRepository;
 import ru.demo_bot_minecraft.repository.TelegramUserRepository;
 
+import javax.transaction.Transactional;
+
 @Component
 @RequiredArgsConstructor
 public class ChatMemberUpdateHandler {
@@ -16,6 +18,7 @@ public class ChatMemberUpdateHandler {
     private final SubscriptionRepository subscriptionRepository;
     private final TelegramUserRepository userRepository;
 
+    @Transactional
     public void processChatMemberUpdate(ChatMemberUpdated chatMemberUpdated) {
         if (chatMemberUpdated.getNewChatMember().getStatus().equals(KICKED_STATUS)) {
             var userId = chatMemberUpdated.getFrom().getId();
