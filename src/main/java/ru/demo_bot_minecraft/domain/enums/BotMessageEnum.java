@@ -110,6 +110,24 @@ public enum BotMessageEnum {
     PLAYER_REVIVED("""
         %s возрожден!
         """),
+    ADMIN_SECTION("""
+        Админская секция
+            """),
+    BANNED("""
+        Вы забанены администратором
+            """),
+    WAITING_FOR_APPROVE("""
+        Ваша заявка на использование бота, находится на рассмотрении
+        """),
+    ENTER_USERNAME_TO_APPROVE("""
+        Введите имя пользователя, которому хотите разрешить пользоваться ботом
+        """),
+    USER_APPROVED("""
+        Пользователь %s может пользоваться ботом
+        """),
+    USER_NOT_FOUND("""
+        Пользователь %s не найден
+        """),
     ;
 
     private final String message;

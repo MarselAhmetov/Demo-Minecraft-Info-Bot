@@ -11,7 +11,7 @@ import ru.demo_bot_minecraft.domain.Keyboards;
 import ru.demo_bot_minecraft.domain.database.PlayerAlias;
 import ru.demo_bot_minecraft.domain.database.TelegramUser;
 import ru.demo_bot_minecraft.domain.enums.BotMessageEnum;
-import ru.demo_bot_minecraft.domain.enums.BotState;
+import ru.demo_bot_minecraft.domain.enums.UserState;
 import ru.demo_bot_minecraft.replies.Reply;
 import ru.demo_bot_minecraft.repository.PlayerAliasRepository;
 import ru.demo_bot_minecraft.repository.PlayerRepository;
@@ -34,8 +34,8 @@ public class EnterAliasReply implements Reply<Message> {
     }
 
     @Override
-    public BotState getState() {
-        return BotState.ADD_ALIAS;
+    public UserState getRequiredUserState() {
+        return UserState.ADD_ALIAS;
     }
 
     @Override
@@ -61,14 +61,14 @@ public class EnterAliasReply implements Reply<Message> {
                             .build()
             );
         });
-        telegramUserRepository.setState(message.getFrom().getId(), BotState.ALIASES);
+        telegramUserRepository.setState(message.getFrom().getId(), UserState.ALIASES);
         SendMessage sendMessage = new SendMessage(message.getChatId().toString(), BotMessageEnum.ALIAS_ADDED.getMessage());
         sendMessage.setReplyMarkup(keyboards.getAliasesKeyboard());
         return sendMessage;
     }
 
     private BotApiMethod<?> playerNotFound(Message message, String playerName) {
-        telegramUserRepository.setState(message.getFrom().getId(), BotState.ALIASES);
+        telegramUserRepository.setState(message.getFrom().getId(), UserState.ALIASES);
         SendMessage sendMessage = new SendMessage(message.getChatId().toString(),
                 BotMessageEnum.PLAYER_NOT_FOUND.getMessage().formatted(playerName));
         sendMessage.setReplyMarkup(keyboards.getAliasesKeyboard());

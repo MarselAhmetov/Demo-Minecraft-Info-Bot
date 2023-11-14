@@ -10,10 +10,10 @@ import ru.demo_bot_minecraft.domain.database.PlayerAlias;
 import ru.demo_bot_minecraft.domain.dto.Description;
 import ru.demo_bot_minecraft.domain.dto.Extra;
 import ru.demo_bot_minecraft.domain.enums.BotMessageEnum;
-import ru.demo_bot_minecraft.domain.enums.BotState;
 import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
 import ru.demo_bot_minecraft.replies.Reply;
 import ru.demo_bot_minecraft.repository.PlayerAliasRepository;
+import ru.demo_bot_minecraft.repository.TelegramUserRepository;
 import ru.demo_bot_minecraft.service.MinecraftService;
 
 import java.util.stream.Collectors;
@@ -27,6 +27,7 @@ public class ServerInfoReply implements Reply<Message> {
     private final MinecraftService minecraftService;
     private final PlayerAliasRepository playerAliasRepository;
     private final Keyboards keyboards;
+    private final TelegramUserRepository userRepository;
 
     @Override
     public boolean predicate(Message message) {
@@ -36,6 +37,7 @@ public class ServerInfoReply implements Reply<Message> {
     @Override
     public BotApiMethod<?> getReply(Message message) {
         var userId = message.getFrom().getId();
+        var user = userRepository.getById(userId);
         var aliases = playerAliasRepository.findAllByUserId(userId).stream()
                 .collect(Collectors.toMap(p -> p.getPlayer().getName(), PlayerAlias::getAlias));
         return minecraftService.getMinecraftServerStats().getServerStats()
@@ -49,13 +51,13 @@ public class ServerInfoReply implements Reply<Message> {
                 return SendMessage.builder()
                     .chatId(message.getChatId().toString())
                     .text(text)
-                    .replyMarkup(keyboards.getDefaultKeyboard())
+                    .replyMarkup(keyboards.getDefaultKeyboard(user.getRole()))
                     .build();
             })
             .orElse(SendMessage.builder()
                 .chatId(message.getChatId().toString())
                 .text(BotMessageEnum.SERVER_IS_UNAVAILABLE.getMessage())
-                .replyMarkup(keyboards.getDefaultKeyboard())
+                .replyMarkup(keyboards.getDefaultKeyboard(user.getRole()))
                 .build());
     }
 
@@ -74,11 +76,6 @@ public class ServerInfoReply implements Reply<Message> {
 
     public static String removeSpecialSymbols(String text) {
         return text.replaceAll("§.", "");
-    }
-
-    @Override
-    public BotState getState() {
-        return BotState.DEFAULT;
     }
 
     @Override

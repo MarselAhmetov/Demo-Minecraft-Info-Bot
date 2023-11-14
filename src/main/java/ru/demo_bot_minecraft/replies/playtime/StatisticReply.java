@@ -29,7 +29,7 @@ import ru.demo_bot_minecraft.domain.database.ServerEvent;
 import ru.demo_bot_minecraft.domain.dto.PlayHistory;
 import ru.demo_bot_minecraft.domain.dto.ServerAction;
 import ru.demo_bot_minecraft.domain.enums.BotMessageEnum;
-import ru.demo_bot_minecraft.domain.enums.BotState;
+import ru.demo_bot_minecraft.domain.enums.UserState;
 import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
 import ru.demo_bot_minecraft.replies.Reply;
 import ru.demo_bot_minecraft.repository.PlayerAliasRepository;
@@ -80,8 +80,8 @@ public class StatisticReply implements Reply<Message> {
     }
 
     @Override
-    public BotState getState() {
-        return BotState.PLAY_TIME;
+    public UserState getRequiredUserState() {
+        return UserState.PLAY_TIME;
     }
 
     @Override

@@ -8,7 +8,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.demo_bot_minecraft.domain.Keyboards;
 import ru.demo_bot_minecraft.domain.enums.BotMessageEnum;
-import ru.demo_bot_minecraft.domain.enums.BotState;
+import ru.demo_bot_minecraft.domain.enums.UserState;
 import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
 import ru.demo_bot_minecraft.replies.Reply;
 import ru.demo_bot_minecraft.repository.TelegramUserRepository;
@@ -28,14 +28,14 @@ public class AddAliasReply implements Reply<Message> {
     }
 
     @Override
-    public BotState getState() {
-        return BotState.ALIASES;
+    public UserState getRequiredUserState() {
+        return UserState.ALIASES;
     }
 
     @Override
     @Transactional
     public BotApiMethod<?> getReply(Message message) {
-        telegramUserRepository.setState(message.getFrom().getId(), BotState.ADD_ALIAS);
+        telegramUserRepository.setState(message.getFrom().getId(), UserState.ADD_ALIAS);
         SendMessage sendMessage = new SendMessage(message.getChatId().toString(), BotMessageEnum.ENTER_PLAYER_NAME_AND_ALIAS.getMessage());
         sendMessage.setReplyMarkup(keyboards.getAliasesKeyboard());
         return sendMessage;

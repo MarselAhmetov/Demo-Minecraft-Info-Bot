@@ -8,7 +8,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.demo_bot_minecraft.domain.Keyboards;
 import ru.demo_bot_minecraft.domain.enums.BotMessageEnum;
-import ru.demo_bot_minecraft.domain.enums.BotState;
+import ru.demo_bot_minecraft.domain.enums.UserState;
 import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
 import ru.demo_bot_minecraft.replies.Reply;
 import ru.demo_bot_minecraft.repository.TelegramUserRepository;
@@ -32,7 +32,7 @@ public class SettingsReply implements Reply<Message> {
     @Transactional
     public BotApiMethod<?> getReply(Message message) {
         var user = userRepository.getById(message.getFrom().getId());
-        user.setBotState(BotState.SETTINGS);
+        user.setState(UserState.SETTINGS);
         return SendMessage.builder()
             .chatId(message.getChatId().toString())
             .text(BotMessageEnum.SETTINGS.getMessage())
@@ -41,8 +41,8 @@ public class SettingsReply implements Reply<Message> {
     }
 
     @Override
-    public BotState getState() {
-        return BotState.DEFAULT;
+    public UserState getRequiredUserState() {
+        return UserState.DEFAULT;
     }
 
     @Override

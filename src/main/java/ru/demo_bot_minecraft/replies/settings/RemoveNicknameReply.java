@@ -8,7 +8,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.demo_bot_minecraft.domain.Keyboards;
 import ru.demo_bot_minecraft.domain.enums.BotMessageEnum;
-import ru.demo_bot_minecraft.domain.enums.BotState;
+import ru.demo_bot_minecraft.domain.enums.UserState;
 import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
 import ru.demo_bot_minecraft.replies.Reply;
 import ru.demo_bot_minecraft.repository.TelegramUserRepository;
@@ -38,8 +38,8 @@ public class RemoveNicknameReply implements Reply<Message> {
     }
 
     @Override
-    public BotState getState() {
-        return BotState.SETTINGS;
+    public UserState getRequiredUserState() {
+        return UserState.SETTINGS;
     }
 
     @Override

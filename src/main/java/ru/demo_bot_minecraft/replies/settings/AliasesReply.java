@@ -9,7 +9,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.demo_bot_minecraft.domain.Keyboards;
 import ru.demo_bot_minecraft.domain.database.PlayerAlias;
 import ru.demo_bot_minecraft.domain.enums.BotMessageEnum;
-import ru.demo_bot_minecraft.domain.enums.BotState;
+import ru.demo_bot_minecraft.domain.enums.UserState;
 import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
 import ru.demo_bot_minecraft.replies.Reply;
 import ru.demo_bot_minecraft.repository.PlayerAliasRepository;
@@ -33,8 +33,8 @@ public class AliasesReply implements Reply<Message> {
     }
 
     @Override
-    public BotState getState() {
-        return BotState.SETTINGS;
+    public UserState getRequiredUserState() {
+        return UserState.SETTINGS;
     }
 
     @Override
@@ -43,7 +43,7 @@ public class AliasesReply implements Reply<Message> {
         var userId = message.getFrom().getId();
         var aliases = playerAliasRepository.findAllByUserId(userId);
         var response = buildAliasesMessage(aliases);
-        telegramUserRepository.setState(message.getFrom().getId(), BotState.ALIASES);
+        telegramUserRepository.setState(message.getFrom().getId(), UserState.ALIASES);
         SendMessage sendMessage = new SendMessage(message.getChatId().toString(), response);
         sendMessage.setReplyMarkup(keyboards.getAliasesKeyboard());
         return sendMessage;

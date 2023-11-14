@@ -30,7 +30,14 @@ public enum RequestMessagesEnum {
     ADD_ALIAS("Добавить алиас"),
     REMOVE_ALIAS("Удалить алиас"),
     ALIASES("Алиасы"),
-    REMOVE_NICKNAME("Удалить ник");
+    REMOVE_NICKNAME("Удалить ник"),
+
+    ADMIN_SECTION("Админ"),
+    USERS_LIST("Список пользователей"),
+    BAN_USER("Забанить пользователя"),
+    UNBAN_USER("Разбанить пользователя"),
+    APPROVE_USER("Разрешить пользоваться"),
+    ;
 
     private final String message;
 

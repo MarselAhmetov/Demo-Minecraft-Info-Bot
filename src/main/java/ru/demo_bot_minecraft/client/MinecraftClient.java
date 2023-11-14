@@ -1,4 +1,4 @@
-package ru.demo_bot_minecraft.connector;
+package ru.demo_bot_minecraft.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedInputStream;
@@ -21,7 +21,7 @@ import ru.demo_bot_minecraft.util.BinaryUtils;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class MinecraftConnector {
+public class MinecraftClient {
     private ObjectMapper mapper = new ObjectMapper();
 
     public ServerStatsResponse sendRequest(String address, Integer port) {

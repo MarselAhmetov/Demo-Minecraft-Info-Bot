@@ -10,7 +10,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import ru.demo_bot_minecraft.domain.enums.BotState;
+import ru.demo_bot_minecraft.domain.enums.UserState;
 
 @Data
 @AllArgsConstructor
@@ -26,6 +26,10 @@ public class TelegramUser {
     String lastName;
     String userName;
     @Enumerated(EnumType.STRING)
-    BotState botState;
+    UserState state;
     String minecraftName;
+    @Enumerated(EnumType.STRING)
+    TelegramUserStatus status;
+    @Enumerated(EnumType.STRING)
+    TelegramUserRole role;
 }

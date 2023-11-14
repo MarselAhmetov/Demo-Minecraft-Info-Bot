@@ -1,6 +1,6 @@
 package ru.demo_bot_minecraft.domain.enums;
 
-public enum BotState {
+public enum UserState {
     DEFAULT,
     SUBSCRIPTION,
     PLAY_TIME,
@@ -8,5 +8,7 @@ public enum BotState {
     ADD_NICKNAME,
     ADD_ALIAS,
     ALIASES,
-    REMOVE_ALIAS
+    REMOVE_ALIAS,
+    ADMIN_SECTION,
+    APPROVE_USER,
 }

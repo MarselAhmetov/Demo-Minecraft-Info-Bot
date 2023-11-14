@@ -56,6 +56,8 @@ public class MinecraftStatusJob {
 
     private LocalDateTime currentCheckTime;
 
+    private static final List<String> ERRORS_TO_IGNORE = List.of("Connect timed out");
+
     @Scheduled(fixedDelay = 5000)
     @Transactional
     public void updateMinecraftInfo() {
@@ -84,7 +86,9 @@ public class MinecraftStatusJob {
                 .error(error)
                 .build();
         downtime = downtimeRepository.save(downtime);
-        sendDowntimeReport(downtime);
+        if (!ERRORS_TO_IGNORE.contains(error)) {
+            sendDowntimeReport(downtime);
+        }
         return downtime;
     }
 
