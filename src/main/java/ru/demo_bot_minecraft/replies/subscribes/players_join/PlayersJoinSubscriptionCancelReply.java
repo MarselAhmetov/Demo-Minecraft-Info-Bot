@@ -8,7 +8,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.demo_bot_minecraft.domain.Keyboards;
 import ru.demo_bot_minecraft.domain.database.SubscriptionType;
-import ru.demo_bot_minecraft.domain.enums.BotMessageEnum;
+import ru.demo_bot_minecraft.domain.enums.BotMessage;
 import ru.demo_bot_minecraft.domain.enums.UserState;
 import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
 import ru.demo_bot_minecraft.replies.Reply;
@@ -31,7 +31,7 @@ public class PlayersJoinSubscriptionCancelReply implements Reply<Message> {
     @Transactional
     public BotApiMethod<?> getReply(Message message) {
         subscriptionRepository.deleteByTelegramUserIdAndType(message.getFrom().getId(), SubscriptionType.PLAYERS_JOIN);
-        SendMessage sendMessage = new SendMessage(message.getChatId().toString(), BotMessageEnum.PLAYERS_JOIN_SUBSCRIPTION_CANCELED.getMessage());
+        SendMessage sendMessage = new SendMessage(message.getChatId().toString(), BotMessage.PLAYERS_JOIN_SUBSCRIPTION_CANCELED.getMessage());
         sendMessage.setReplyMarkup(keyboards.getSubscriptionsKeyboard(message.getFrom().getId()));
         return sendMessage;
     }
@@ -39,10 +39,5 @@ public class PlayersJoinSubscriptionCancelReply implements Reply<Message> {
     @Override
     public UserState getRequiredUserState() {
         return UserState.SUBSCRIPTION;
-    }
-
-    @Override
-    public boolean availableInAnyState() {
-        return false;
     }
 }

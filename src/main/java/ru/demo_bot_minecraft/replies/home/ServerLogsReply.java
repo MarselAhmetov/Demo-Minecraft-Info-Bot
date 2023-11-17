@@ -12,7 +12,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.demo_bot_minecraft.domain.Keyboards;
 import ru.demo_bot_minecraft.domain.database.PlayerAlias;
 import ru.demo_bot_minecraft.domain.database.ServerEvent;
-import ru.demo_bot_minecraft.domain.enums.BotMessageEnum;
+import ru.demo_bot_minecraft.domain.enums.BotMessage;
 import ru.demo_bot_minecraft.domain.enums.RequestMessagesEnum;
 import ru.demo_bot_minecraft.replies.Reply;
 import ru.demo_bot_minecraft.repository.PlayerAliasRepository;
@@ -52,7 +52,7 @@ public class ServerLogsReply implements Reply<Message> {
 
     private String getText(Map<String, String> aliases) {
         StringBuilder messageBuilder = new StringBuilder();
-        messageBuilder.append(BotMessageEnum.LOGS.getMessage());
+        messageBuilder.append(BotMessage.LOGS.getMessage());
         var events = serverEventRepository.findAllByTimeBetweenOrderByTimeAsc(DateUtils.nowMinusHours(24L), DateUtils.now());
         for (ServerEvent event : events) {
             messageBuilder.append(event.getTime().format(DateTimeFormatter.ofPattern("dd.MM HH:mm"))).append(" ")
