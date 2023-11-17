@@ -26,10 +26,10 @@ public class TelegramUser {
     String lastName;
     String userName;
     @Enumerated(EnumType.STRING)
-    UserState state;
+    UserState state = UserState.DEFAULT;
     String minecraftName;
     @Enumerated(EnumType.STRING)
-    TelegramUserStatus status;
+    TelegramUserStatus status = TelegramUserStatus.WAITING_FOR_APPROVE;
     @Enumerated(EnumType.STRING)
-    TelegramUserRole role;
+    TelegramUserRole role = TelegramUserRole.USER;
 }
