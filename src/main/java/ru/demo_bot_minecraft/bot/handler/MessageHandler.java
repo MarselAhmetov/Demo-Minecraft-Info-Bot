@@ -10,6 +10,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.demo_bot_minecraft.dispatcher.StateDispatcher;
 import ru.demo_bot_minecraft.domain.Keyboards;
 import ru.demo_bot_minecraft.domain.database.TelegramUser;
+import ru.demo_bot_minecraft.domain.database.TelegramUserRole;
 import ru.demo_bot_minecraft.domain.database.TelegramUserStatus;
 import ru.demo_bot_minecraft.domain.enums.BotMessage;
 import ru.demo_bot_minecraft.domain.enums.UserState;
@@ -78,6 +79,8 @@ public class MessageHandler {
                 .lastName(message.getFrom().getLastName())
                 .firstName(message.getFrom().getFirstName())
                 .state(UserState.DEFAULT)
+                .status(TelegramUserStatus.WAITING_FOR_APPROVE)
+                .role(TelegramUserRole.USER)
                 .build();
     }
 
