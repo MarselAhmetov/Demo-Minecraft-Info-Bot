@@ -18,7 +18,15 @@ public class SendMessageEventListener {
     @EventListener
     public void handleContextStart(SendMessageEvent sendMessageEvent) {
         try {
-            telegramBot.execute(new SendMessage(sendMessageEvent.getRecipient(), sendMessageEvent.getMessage()));
+
+            var sendMessage = SendMessage.builder()
+                    .chatId(sendMessageEvent.getRecipient())
+                    .text(sendMessageEvent.getMessage())
+                    .build();
+            if (sendMessageEvent.getKeyboard() != null) {
+                sendMessage.setReplyMarkup(sendMessageEvent.getKeyboard());
+            }
+            telegramBot.execute(sendMessage);
         } catch (TelegramApiException e) {
             log.error("Error while sending message: %s to user: %s"
                     .formatted(sendMessageEvent.getMessage(), sendMessageEvent.getRecipient()), e);

@@ -11,4 +11,6 @@ public enum UserState {
     REMOVE_ALIAS,
     ADMIN_SECTION,
     APPROVE_USER,
+    BAN_USER,
+    UNBAN_USER,
 }

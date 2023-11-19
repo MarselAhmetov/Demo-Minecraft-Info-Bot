@@ -32,6 +32,8 @@ import ru.demo_bot_minecraft.repository.ServerInfoDowntimeRepository;
 import ru.demo_bot_minecraft.repository.ServerStatsRepository;
 import ru.demo_bot_minecraft.repository.SubscriptionRepository;
 import ru.demo_bot_minecraft.service.MinecraftService;
+import ru.demo_bot_minecraft.service.ServerInfoDowntimeService;
+import ru.demo_bot_minecraft.service.SubscriptionsService;
 import ru.demo_bot_minecraft.util.DateUtils;
 
 import static ru.demo_bot_minecraft.domain.enums.BotMessage.NEW_PLAYER_JOIN;
@@ -49,6 +51,8 @@ public class MinecraftStatusJob {
     private final SubscriptionRepository subscriptionRepository;
     private final ServerInfoDowntimeRepository downtimeRepository;
     private final PlayerAliasRepository playerAliasRepository;
+    private final SubscriptionsService subscriptionsService;
+    private final ServerInfoDowntimeService serverInfoDowntimeService;
 
     private final ServerStatsMapper serverStatsMapper;
 
@@ -66,8 +70,15 @@ public class MinecraftStatusJob {
         var currentServerStats = minecraftService.getMinecraftServerStats();
         if (currentServerStats.getServerStats().isEmpty()) {
             if (currentServerStats.getError() != null) {
-                ServerInfoDowntime downtime = getCurrentDowntime()
-                        .orElseGet(() -> createDowntime(currentServerStats.getError()));
+                var downtime = serverInfoDowntimeService.getCurrentDowntime()
+                        .orElseGet(() -> {
+                            var d = serverInfoDowntimeService.createDowntime(currentServerStats.getError());
+                            if (!ERRORS_TO_IGNORE.contains(currentServerStats.getError())) {
+                                subscriptionsService.sendDowntimeReportMessage(d);
+                            }
+                            return d;
+                        });
+                
                 log.info("Server downtime in seconds: " + ChronoUnit.SECONDS.between(downtime.getDowntime(), DateUtils.now()));
             }
         }
@@ -80,24 +91,9 @@ public class MinecraftStatusJob {
         });
     }
 
-    private ServerInfoDowntime createDowntime(String error) {
-        var downtime = ServerInfoDowntime.builder()
-                .downtime(DateUtils.now())
-                .error(error)
-                .build();
-        downtime = downtimeRepository.save(downtime);
-        if (!ERRORS_TO_IGNORE.contains(error)) {
-            sendDowntimeReport(downtime);
-        }
-        return downtime;
-    }
-
-    private Optional<ServerInfoDowntime> getCurrentDowntime() {
-        return downtimeRepository.findByUptimeIsNull();
-    }
 
     private Optional<ServerInfoDowntime> setUptimeToCurrentDowntime() {
-        return getCurrentDowntime().map(downtime -> {
+        return serverInfoDowntimeService.getCurrentDowntime().map(downtime -> {
             downtime.setUptime(DateUtils.now());
             downtime = downtimeRepository.save(downtime);
             sendUptimeReport(downtime);
@@ -105,16 +101,7 @@ public class MinecraftStatusJob {
         });
     }
 
-    private void sendDowntimeReport(ServerInfoDowntime downtime) {
-        var subscriptions = subscriptionRepository.findAllByType(SubscriptionType.DOWNTIME);
-        String messageBuilder = "Сервер упал в " + downtime.getDowntime().format(
-                DateTimeFormatter.ofPattern("dd.MM HH:mm"));
-        subscriptions.stream()
-                .map(Subscription::getTelegramUser)
-                .distinct()
-                .forEach(user -> applicationEventPublisher.publishEvent(new SendMessageEvent(this,
-                        messageBuilder, user.getId().toString())));
-    }
+
 
     private void sendUptimeReport(ServerInfoDowntime downtime) {
         var subscriptions = subscriptionRepository.findAllByType(SubscriptionType.DOWNTIME);

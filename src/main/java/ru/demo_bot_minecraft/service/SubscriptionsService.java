@@ -3,13 +3,13 @@ package ru.demo_bot_minecraft.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-import ru.demo_bot_minecraft.domain.database.TelegramUser;
-import ru.demo_bot_minecraft.domain.database.TelegramUserRole;
-import ru.demo_bot_minecraft.domain.database.TelegramUserStatus;
+import ru.demo_bot_minecraft.domain.database.*;
 import ru.demo_bot_minecraft.domain.enums.BotMessage;
 import ru.demo_bot_minecraft.event.SendMessageEvent;
 import ru.demo_bot_minecraft.repository.SubscriptionRepository;
 import ru.demo_bot_minecraft.repository.TelegramUserRepository;
+
+import java.time.format.DateTimeFormatter;
 
 @Service
 @RequiredArgsConstructor
@@ -43,5 +43,16 @@ public class SubscriptionsService {
                         applicationEventPublisher.publishEvent(
                                 new SendMessageEvent(this, messageBuilder.toString(), admin.getId().toString())
                         ));
+    }
+
+    public void sendDowntimeReportMessage(ServerInfoDowntime downtime) {
+        var subscriptions = subscriptionRepository.findAllByType(SubscriptionType.DOWNTIME);
+        String message = "Сервер упал в " + downtime.getDowntime().format(
+                DateTimeFormatter.ofPattern("dd.MM HH:mm"));
+        subscriptions.stream()
+                .map(Subscription::getTelegramUser)
+                .distinct()
+                .forEach(user -> applicationEventPublisher.publishEvent(new SendMessageEvent(this,
+                        message, user.getId().toString())));
     }
 }
