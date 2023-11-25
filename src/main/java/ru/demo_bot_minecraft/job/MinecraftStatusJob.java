@@ -96,7 +96,9 @@ public class MinecraftStatusJob {
         return serverInfoDowntimeService.getCurrentDowntime().map(downtime -> {
             downtime.setUptime(DateUtils.now());
             downtime = downtimeRepository.save(downtime);
-            sendUptimeReport(downtime);
+            if (!ERRORS_TO_IGNORE.contains(downtime.getError())) {
+                sendUptimeReport(downtime);
+            }
             return downtime;
         });
     }
