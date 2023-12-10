@@ -1,11 +1,9 @@
 package ru.demo_bot_minecraft.replies.playtime;
 
-import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -99,13 +97,13 @@ public class StatisticReply implements Reply<Message> {
         }
         if (text.equalsIgnoreCase(RequestMessagesEnum.WEEK.getMessage())) {
             return serverEventRepository.findAllByTimeBetweenOrderByTimeAsc(
-                    DateUtils.today().with(DayOfWeek.MONDAY).atStartOfDay(),
+                    DateUtils.nowMinusDays(7L),
                     DateUtils.now()
             );
         }
         if (text.equalsIgnoreCase(RequestMessagesEnum.MONTH.getMessage())) {
             return serverEventRepository.findAllByTimeBetweenOrderByTimeAsc(
-                    DateUtils.today().with(TemporalAdjusters.firstDayOfMonth()).atStartOfDay(),
+                    DateUtils.nowMinusDays(30L),
                     DateUtils.now()
             );
         }

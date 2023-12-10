@@ -8,8 +8,8 @@ Telegram Bot for getting some info about Minecraft server
 1) `PORT` - server port 8050 by default
 2) `BOT_NAME` - Telegram bot name
 3) `BOT_TOKEN` - Telegram token
-4) `MINECRAFT_ADDRESS` - Minecraft server address
-5) `MINECRAFT_PORT` - Minecraft server port
+4) `MINECRAFT_SERVER_ADDRESS` - Minecraft server address
+5) `MINECRAFT_SERVER_PORT` - Minecraft server port
 
 ### Copyright 
 

@@ -21,9 +21,9 @@ public enum RequestMessagesEnum {
 
     TODAY("Сегодня"),
     YESTERDAY("Вчера"),
-    MONTH("Месяц"),
-    WEEK("Неделя"),
-    ALL_TIME("Все время"),
+    MONTH("За 30 дней"),
+    WEEK("За 7 дней"),
+    ALL_TIME("За все время"),
     START("/start"),
     SETTINGS("Настройки"),
     ADD_NICKNAME("Добавить ник"),

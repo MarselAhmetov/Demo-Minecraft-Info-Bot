@@ -20,4 +20,8 @@ public class DateUtils {
     public static LocalDateTime nowMinusHours(Long hours) {
         return LocalDateTime.now(TIME_ZONE).minusHours(hours);
     }
+
+    public static LocalDateTime nowMinusDays(Long days) {
+        return LocalDateTime.now(TIME_ZONE).minusDays(days);
+    }
 }
