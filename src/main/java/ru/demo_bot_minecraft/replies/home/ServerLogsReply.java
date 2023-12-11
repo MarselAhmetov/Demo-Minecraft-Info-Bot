@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.demo_bot_minecraft.domain.Keyboards;
@@ -47,6 +48,7 @@ public class ServerLogsReply implements Reply<Message> {
                 .chatId(message.getChatId().toString())
                 .text(text)
                 .replyMarkup(keyboards.getDefaultKeyboard(user.getRole()))
+                .parseMode(ParseMode.HTML)
                 .build();
     }
 

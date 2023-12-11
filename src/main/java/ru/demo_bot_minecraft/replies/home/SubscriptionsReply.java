@@ -3,6 +3,7 @@ package ru.demo_bot_minecraft.replies.home;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.demo_bot_minecraft.domain.Keyboards;
@@ -33,19 +34,20 @@ public class SubscriptionsReply implements Reply<Message> {
     public BotApiMethod<?> getReply(Message message) {
         telegramUserRepository.setState(message.getFrom().getId(), UserState.SUBSCRIPTION);
         return SendMessage.builder()
-            .chatId(message.getChatId().toString())
-            .replyMarkup(keyboards.getSubscriptionsKeyboard(message.getFrom().getId()))
-            .text(buildMessage(message))
-            .build();
+                .chatId(message.getChatId().toString())
+                .replyMarkup(keyboards.getSubscriptionsKeyboard(message.getFrom().getId()))
+                .text(buildMessage(message))
+                .parseMode(ParseMode.HTML)
+                .build();
     }
 
     private String buildMessage(Message message) {
         var subscriptions = subscriptionRepository
-            .findAllByTelegramUserId(message.getFrom().getId());
+                .findAllByTelegramUserId(message.getFrom().getId());
         StringBuilder messageBuilder = new StringBuilder();
         if (!subscriptions.isEmpty()) {
             messageBuilder.append(BotMessage.CURRENT_SUBSCRIPTIONS.getMessage());
-            subscriptions.forEach( subscription -> messageBuilder.append(subscription.getType().name()).append("\n"));
+            subscriptions.forEach(subscription -> messageBuilder.append(subscription.getType().name()).append("\n"));
         } else {
             messageBuilder.append(BotMessage.SUBSCRIPTION.getMessage());
         }
