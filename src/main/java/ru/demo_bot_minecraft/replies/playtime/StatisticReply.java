@@ -19,6 +19,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.demo_bot_minecraft.domain.Keyboards;
@@ -66,15 +67,17 @@ public class StatisticReply implements Reply<Message> {
         playHistories.sort((o1, o2) -> o2.getPlayTimeSeconds().compareTo(o1.getPlayTimeSeconds()));
         StringBuilder messageBuilder = new StringBuilder();
         messageBuilder.append(BotMessage.PLAY_TIME_DATA.getMessage());
-        playHistories.forEach(playHistory -> messageBuilder.append(aliases.getOrDefault(playHistory.getPlayerName(), playHistory.getPlayerName())).append(" ")
-            .append(playHistory.getPlayTimeSeconds() / SECONDS_IN_HOUR).append(":")
-            .append((playHistory.getPlayTimeSeconds() % SECONDS_IN_HOUR) / SECONDS_IN_MINUTES).append(":")
-            .append(playHistory.getPlayTimeSeconds() % SECONDS_IN_MINUTES)
-            .append("\n"));
-        SendMessage sendMessage;
-        sendMessage = new SendMessage(message.getChatId().toString(), messageBuilder.toString());
-        sendMessage.setReplyMarkup(keyboards.getPlayTimeKeyboard());
-        return sendMessage;
+        playHistories.forEach(playHistory -> {
+                var playerName = aliases.getOrDefault(playHistory.getPlayerName(), playHistory.getPlayerName());
+                var playTime = formatPlayTime(playHistory.getPlayTimeSeconds());
+                messageBuilder.append(playerName).append("\t").append(playTime).append("\n");
+        });
+        return SendMessage.builder()
+                .chatId(message.getChatId().toString())
+                .text(messageBuilder.toString())
+                .replyMarkup(keyboards.getPlayTimeKeyboard())
+                .parseMode(ParseMode.HTML)
+                .build();
     }
 
     @Override
@@ -218,5 +221,13 @@ public class StatisticReply implements Reply<Message> {
             }
         }
         return new ArrayList<>(result.values());
+    }
+
+    private String formatPlayTime(Long playTimeSeconds) {
+        var hours = playTimeSeconds / SECONDS_IN_HOUR;
+        var minutes = (playTimeSeconds % SECONDS_IN_HOUR) / SECONDS_IN_MINUTES;
+        var seconds = playTimeSeconds % SECONDS_IN_MINUTES;
+
+        return String.format("%d:%02d:%02d", hours, minutes, seconds);
     }
 }
