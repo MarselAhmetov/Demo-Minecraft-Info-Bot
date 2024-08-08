@@ -212,7 +212,7 @@ public class MinecraftStatusJob {
                 lastCheckData.getMaxPlayers() == currentServerData.getPlayersInfo().getMax() &&
                 lastCheckData.getOnlinePlayers() == currentServerData.getPlayersInfo().getOnline() &&
                 lastCheckData.getProtocol().equals(currentServerData.getVersion().getProtocol()) &&
-                lastCheckData.getText().equals(currentServerData.getDescription().getText()) &&
+                lastCheckData.getText().equals(currentServerData.getDescription()) &&
                 lastCheckData.getPlayersOnline().size() == currentServerData.getPlayersInfo().getPlayersOnline().size() &&
                 new HashSet<>(lastCheckData.getPlayersOnline()).containsAll(currentServerData.getPlayersInfo().getPlayersOnline());
     }
