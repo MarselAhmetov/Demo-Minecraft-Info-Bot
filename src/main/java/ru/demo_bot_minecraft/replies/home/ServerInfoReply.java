@@ -45,7 +45,7 @@ public class ServerInfoReply implements Reply<Message> {
                 StringBuilder messageBuilder = new StringBuilder();
                 serverStats.getPlayersInfo().getPlayersOnline()
                     .forEach(player -> messageBuilder.append(aliases.getOrDefault(player.getName(), player.getName())).append("\n"));
-                var text = BotMessage.SERVER_INFO.getMessage().formatted(getText(serverStats.getDescription()),
+                var text = BotMessage.SERVER_INFO.getMessage().formatted(serverStats.getDescription(),
                     serverStats.getPlayersInfo().getOnline() + "/" + serverStats.getPlayersInfo().getMax(),
                     messageBuilder.toString());
                 return SendMessage.builder()

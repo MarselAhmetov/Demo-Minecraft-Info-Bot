@@ -61,12 +61,13 @@ public class MinecraftClient {
 //                json = json.substring(0, faviconIndex) + "}";
 //            }
 
-            int forgeDataIndex = json.lastIndexOf(",\"forgeData\":");
-            if (forgeDataIndex >= 0) {
-                json = json.substring(0, forgeDataIndex) + "}";
-            }
+//            int forgeDataIndex = json.lastIndexOf(",\"forgeData\":");
+//            if (forgeDataIndex >= 0) {
+//                json = json.substring(0, forgeDataIndex) + "}";
+//            }
 
             ServerStats serverStats = mapper.readValue(json, ServerStats.class);
+            serverStats.setFavicon(null);
 
             clientSocket.close();
             return ServerStatsResponse.builder()
