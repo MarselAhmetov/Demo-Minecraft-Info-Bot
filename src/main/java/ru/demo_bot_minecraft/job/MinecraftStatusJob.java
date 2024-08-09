@@ -78,8 +78,8 @@ public class MinecraftStatusJob {
                             }
                             return d;
                         });
-                
-                log.info("Server downtime in seconds: " + ChronoUnit.SECONDS.between(downtime.getDowntime(), DateUtils.now()));
+
+                log.info("Server downtime in seconds: {}", ChronoUnit.SECONDS.between(downtime.getDowntime(), DateUtils.now()));
             }
         }
         currentServerStats.getServerStats().ifPresent(currentServerData -> {

@@ -17,5 +17,7 @@ public class PlayerDeadRequest {
     private String name;
     @JsonProperty
     private Map<String, Integer> materials;
+    @JsonProperty
+    private Long buybackCount;
 }
 

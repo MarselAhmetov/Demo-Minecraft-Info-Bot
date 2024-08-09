@@ -110,6 +110,12 @@ public enum BotMessage {
     PLAYER_REVIVED("""
         %s возрожден!
         """),
+    PLAYER_TRY_BUYBACK("""
+        %s выкупается!
+        """),
+    PLAYER_BUYBACKED("""
+        %s успешно выкупился!
+        """),
     ADMIN_SECTION("""
         Админская секция
             """),

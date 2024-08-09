@@ -5,15 +5,12 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import ru.demo_bot_minecraft.domain.enums.PlayerReviveType;
 
 @JsonSerialize
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PlayerRevivedRequest {
+public class PlayerBuybackedRequest {
     @JsonProperty
     private String name;
-    @JsonProperty
-    private PlayerReviveType type;
 }
