@@ -20,7 +20,8 @@ import lombok.experimental.FieldDefaults;
 @ToString
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ServerStats {
-    String description;
+    Description description;
+    String descriptionText;
     @JsonProperty("players")
     Players playersInfo;
     Version version;

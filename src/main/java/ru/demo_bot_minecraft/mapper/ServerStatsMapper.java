@@ -8,7 +8,7 @@ import ru.demo_bot_minecraft.domain.database.ServerStats;
 public class ServerStatsMapper {
     public ServerStats toEntity(ru.demo_bot_minecraft.domain.dto.ServerStats serverStats) {
         return ServerStats.builder()
-            .text(serverStats.getDescription())
+            .text(serverStats.getDescriptionText())
             .name(serverStats.getVersion().getName())
             .protocol(serverStats.getVersion().getProtocol())
             .maxPlayers(serverStats.getPlayersInfo().getMax())

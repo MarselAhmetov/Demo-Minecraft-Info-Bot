@@ -13,8 +13,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.demo_bot_minecraft.domain.dto.ServerStats;
-import ru.demo_bot_minecraft.domain.dto.ServerStatsResponse;
+import ru.demo_bot_minecraft.domain.dto.*;
 import ru.demo_bot_minecraft.util.BinaryUtils;
 
 @Data
@@ -67,6 +66,7 @@ public class MinecraftClient {
 //            }
 
             ServerStats serverStats = mapper.readValue(json, ServerStats.class);
+            serverStats.setDescriptionText(extractPlainText(serverStats.getDescription()));
             serverStats.setFavicon(null);
 
             clientSocket.close();
@@ -77,6 +77,34 @@ public class MinecraftClient {
             return ServerStatsResponse.builder()
                 .error(e.getMessage())
                 .build();
+        }
+    }
+
+    public static String extractPlainText(Description description) {
+        StringBuilder sb = new StringBuilder();
+
+        if (description.getText() != null) {
+            sb.append(description.getText());
+        }
+
+        if (description.getExtra() != null) {
+            for (DescriptionPart part : description.getExtra()) {
+                appendTextRecursive(sb, part);
+            }
+        }
+
+        return sb.toString();
+    }
+
+    private static void appendTextRecursive(StringBuilder sb, DescriptionPart part) {
+        if (part.getText() != null) {
+            sb.append(part.getText());
+        }
+
+        if (part.getExtra() != null) {
+            for (DescriptionPart child : part.getExtra()) {
+                appendTextRecursive(sb, child);
+            }
         }
     }
 }

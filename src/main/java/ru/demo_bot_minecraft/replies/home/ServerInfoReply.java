@@ -45,7 +45,7 @@ public class ServerInfoReply implements Reply<Message> {
                 StringBuilder messageBuilder = new StringBuilder();
                 serverStats.getPlayersInfo().getPlayersOnline()
                     .forEach(player -> messageBuilder.append(aliases.getOrDefault(player.getName(), player.getName())).append("\n"));
-                var text = BotMessage.SERVER_INFO.getMessage().formatted(serverStats.getDescription(),
+                var text = BotMessage.SERVER_INFO.getMessage().formatted(serverStats.getDescriptionText(),
                     serverStats.getPlayersInfo().getOnline() + "/" + serverStats.getPlayersInfo().getMax(),
                     messageBuilder.toString());
                 return SendMessage.builder()
@@ -61,18 +61,18 @@ public class ServerInfoReply implements Reply<Message> {
                 .build());
     }
 
-    private String getText(Description description) {
-        if (description.getText() != null && !description.getText().isEmpty()) {
-            return removeSpecialSymbols(description.getText());
-        } else if (description.getExtra() != null && !description.getExtra().isEmpty()) {
-            StringBuilder stringBuilder = new StringBuilder();
-            description.getExtra().stream().map(Extra::getText)
-                .forEach(stringBuilder::append);
-            return removeSpecialSymbols(stringBuilder.toString());
-        } else {
-            return "Сервер";
-        }
-    }
+//    private String getText(Description description) {
+//        if (description.getText() != null && !description.getText().isEmpty()) {
+//            return removeSpecialSymbols(description.getText());
+//        } else if (description.getExtra() != null && !description.getExtra().isEmpty()) {
+//            StringBuilder stringBuilder = new StringBuilder();
+//            description.getExtra().stream().map(Extra::getText)
+//                .forEach(stringBuilder::append);
+//            return removeSpecialSymbols(stringBuilder.toString());
+//        } else {
+//            return "Сервер";
+//        }
+//    }
 
     public static String removeSpecialSymbols(String text) {
         return text.replaceAll("§.", "");
